@@ -40,44 +40,46 @@ rm -f build/${APP}
 ldd $APP_PATH
 
 if [[ ${APP} == "rippled" ]]; then
-  if [[ $TARGET == "coverage" ]]; then
-    export PATH=$PATH:$LCOV_ROOT/usr/bin
+  export APP_ARGS="--unittest"
+  export LCOV_FILES="*/src/ripple/*"
+else
+  : ${APP_ARGS:=}
+  : ${LCOV_FILES:="*/src/*"}
+fi
 
-    # Create baseline coverage data file
-    lcov --no-external -c -i -d . -o baseline.info
-  fi
+if [[ $TARGET == "coverage" ]]; then
+  export PATH=$PATH:$LCOV_ROOT/usr/bin
 
-  # Execute unit tests under gdb, printing a call stack
-  # if we get a crash.
-  gdb -return-child-result -quiet -batch \
-      -ex "set env MALLOC_CHECK_=3" \
-      -ex "set print thread-events off" \
-      -ex run \
-      -ex "thread apply all backtrace full" \
-      -ex "quit" \
-      --args $APP_PATH --unittest
+  # Create baseline coverage data file
+  lcov --no-external -c -i -d . -o baseline.info
+fi
 
-  if [[ $TARGET == "coverage" ]]; then
-    # Create test coverage data file
-    lcov --no-external -c -d . -o tests.info
+# Execute unit tests under gdb, printing a call stack
+# if we get a crash.
+gdb -return-child-result -quiet -batch \
+    -ex "set env MALLOC_CHECK_=3" \
+    -ex "set print thread-events off" \
+    -ex run \
+    -ex "thread apply all backtrace full" \
+    -ex "quit" \
+    --args $APP_PATH --unittest
 
-    # Combine baseline and test coverage data
-    lcov -a baseline.info -a tests.info -o lcov-all.info
+if [[ $TARGET == "coverage" ]]; then
+  # Create test coverage data file
+  lcov --no-external -c -d . -o tests.info
 
-    # Only report on src/ripple files
-    lcov -e "lcov-all.info" "*/src/ripple/*" -o lcov.info
+  # Combine baseline and test coverage data
+  lcov -a baseline.info -a tests.info -o lcov-all.info
 
-    # Push the results (lcov.info) to codecov
-    codecov -X gcov # don't even try and look for .gcov files ;)
-  fi
+  # Only report on src/ripple files
+  lcov -e "lcov-all.info" "${LCOV_FILES}" -o lcov.info
 
+  # Push the results (lcov.info) to codecov
+  codecov -X gcov # don't even try and look for .gcov files ;)
+fi
+
+if [[ ${APP} == "rippled" ]]; then
   # Run NPM tests
   npm install --progress=false
   npm test --rippled=$APP_PATH
-else
-
-  # If the app runs and exits cleanly, it's good.
-  # (signlibdemo)
-  $APP_PATH
-
 fi

@@ -32,7 +32,7 @@ matrix:
     - compiler: gcc
       env:
       - GCC_VER=5
-      - TARGET=debug
+      - TARGET=coverage
       - PATH=$PWD/cmake/bin:$PATH
       - APP=ripplelibppdemo
       - BUILD=cmake
