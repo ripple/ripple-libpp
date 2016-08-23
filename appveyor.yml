@@ -33,6 +33,8 @@ cache:
 shallow_clone: true
 
 install:
+  # Grab submodules
+  - git submodule update --init --recursive
   # We want easy_install, python and protoc.exe on PATH.
   - SET PATH=%PYTHON%;%PYTHON%/Scripts;C:/rippled_deps15.01;%PATH%
 
