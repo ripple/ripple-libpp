@@ -32,7 +32,6 @@ cache:
 clone_depth: 20
 
 install:
-  - ps: ls
   # Grab submodules
   - git submodule update --init --recursive
   # We want easy_install, python and protoc.exe on PATH.
@@ -102,7 +101,7 @@ after_build:
 
 test_script:
   - ps: |
-        if ([$env:app] -eq []]) {
+        if ((-NOT Test-Path env:\app) -or ($env::app -eq "rippled")) {
           # Run the rippled unit tests
           & $exe --unittest
 
