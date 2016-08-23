@@ -33,6 +33,7 @@ cache:
 shallow_clone: true
 
 install:
+  - ps: ls
   # Grab submodules
   - git submodule update --init --recursive
   # We want easy_install, python and protoc.exe on PATH.
