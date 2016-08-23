@@ -17,16 +17,9 @@ environment:
   OPENSSL_ROOT: C:/rippled_deps15.01/openssl
 
   matrix:
-  - build: scons
-    target: msvc.debug
   - build: cmake
     target: msvc.debug
-    app: signlibdemo
-  # This build works, but our current Appveyor config runs matrix builds
-  # sequentially, and the one build is already slow enough.
-  #- build: cmake
-  #  target: msvc.debug
-  #  app: rippled
+    app: ripplelibppdemo
 
 os: Visual Studio 2015
 
@@ -49,8 +42,8 @@ install:
           Start-FileDownload $env:PIP_URL
           Start-FileDownload $env:PYWIN32_URL
 
+          & extras/rippled/bin/ci/windows/install-dependencies.bat
         }
-  - bin/ci/windows/install-dependencies.bat
 
   # Download dependencies if appveyor didn't restore them from the cache.
   # Use 7zip to unzip.
@@ -107,18 +100,18 @@ after_build:
 
 test_script:
   - ps: |
-        if ($env:app -eq "signlibdemo") {
-          # Run the signlibdemo test
-          & $exe
-        }
-        else
-        {
+        if ([$env:app] -eq []]) {
           # Run the rippled unit tests
           & $exe --unittest
 
           # Run the rippled integration tests
           & npm install --progress=false
           & npm test --rippled="$exe"
+        }
+        else
+        {
+          # Just run the app
+          & $exe
         }
 
 
