@@ -32,8 +32,9 @@ if [[ ${BUILD:-} == cmake ]]; then
         rm -fr cmake
     fi
     if [[ ! -d cmake ]]; then
-      CMAKE_URL="https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz"
-      mkdir cmake && wget -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      CMAKE_URL="https://www.cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz"
+      wget --version
+      mkdir cmake && wget -O - --no-check-certificate ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
       cmake --version
     fi
 fi
