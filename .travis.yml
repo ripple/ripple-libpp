@@ -35,7 +35,7 @@ matrix:
       - TARGET=debug
       - CLANG_VER=3.8
       - PATH=$PWD/llvm-$LLVM_VERSION/bin:$PATH
-      - APP=rippledlibppdemo
+      - APP=ripplelibppdemo
       - BUILD=cmake
       addons: *ao_gcc5
 
@@ -44,7 +44,7 @@ matrix:
       - GCC_VER=5
       - TARGET=debug
       - PATH=$PWD/cmake/bin:$PATH
-      - APP=rippledlibppdemo
+      - APP=ripplelibppdemo
       - BUILD=cmake
       addons: *ao_gcc5
 
