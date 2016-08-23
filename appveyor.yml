@@ -28,9 +28,8 @@ os: Visual Studio 2015
 cache:
   - "C:\\rippled_deps15.01"
 
-# This means we'll download a zip of the branch we want, rather than the full
-# history.
-shallow_clone: true
+# Only clone the last 20 commits.
+clone_depth: 20
 
 install:
   - ps: ls
