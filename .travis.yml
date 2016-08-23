@@ -29,19 +29,6 @@ matrix:
   include:
     # Default BUILD is scons. Default APP is rippled.
 
-    - compiler: clang
-      env:
-      - GCC_VER=5
-      - TARGET=debug
-      - CLANG_VER=3.8
-      - PATH=$PWD/llvm-$LLVM_VERSION/bin:$PWD/cmake/bin:$PATH
-      - APP=ripplelibppdemo
-      - BUILD=cmake
-      addons: &ao_gcc5
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: *gcc5_pkgs
-
     - compiler: gcc
       env:
       - GCC_VER=5
@@ -49,7 +36,20 @@ matrix:
       - PATH=$PWD/cmake/bin:$PATH
       - APP=ripplelibppdemo
       - BUILD=cmake
-      addons: *ao_gcc5
+      addons: &ao_gcc5
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: *gcc5_pkgs
+
+    # - compiler: clang
+    #   env:
+    #   - GCC_VER=5
+    #   - TARGET=debug
+    #   - CLANG_VER=3.8
+    #   - PATH=$PWD/llvm-$LLVM_VERSION/bin:$PWD/cmake/bin:$PATH
+    #   - APP=ripplelibppdemo
+    #   - BUILD=cmake
+    #   addons: *ao_gcc5
 
 cache:
   directories:
