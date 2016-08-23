@@ -51,7 +51,7 @@ ls -lah ~/.npm || mkdir ~/.npm
 chown -Rc $USER ~/.npm
 pip install --user https://github.com/codecov/codecov-python/archive/master.zip
 
-bash bin/sh/install-boost.sh
+bash extras/rippled/bin/sh/install-boost.sh
 
 # Install lcov
 # Download the archive
