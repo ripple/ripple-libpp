@@ -1,0 +1,4 @@
+[submodule "extras/rippled"]
+	path = extras/rippled
+	url = https://github.com/ripple/rippled.git
+	branch = develop
