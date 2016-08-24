@@ -258,8 +258,10 @@ endif()
 
 ############################################################
 
-include_directories(src extras/rippled/src extras/rippled/src/beast
-  extras/rippled/src/beast/include extras/rippled/src/beast/extras)
+include_directories(
+  extras/rippled/src
+  extras/rippled/src/beast/include
+  extras/rippled/src/beast/extras)
 
 if (coverage)
   add_compile_options(-fprofile-arcs -ftest-coverage)

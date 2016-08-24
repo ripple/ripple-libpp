@@ -103,6 +103,7 @@ int main (int argc, char** argv)
     auto const pass2 = demonstrateSigning(ripple::KeyType::ed25519,
         "alice", "r9mC1zjD9u5SJXw56pdPhxoDSHaiNcisET");
 
+    assert(pass1 && pass2);
     return pass1 && pass2 ? 0 : 1;
 }
 
