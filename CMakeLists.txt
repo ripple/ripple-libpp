@@ -285,20 +285,24 @@ if (NOT WIN32)
   set(Boost_USE_MULTITHREADED on)
   set(Boost_USE_STATIC_RUNTIME off)
   find_package(Boost COMPONENTS
-    coroutine
-    context
-    date_time
-    filesystem
-    program_options
+    #coroutine
+    #context
+    #date_time
+    #filesystem
+    #program_options
     regex
     system
-    thread)
+    thread
+    )
 
   if (Boost_FOUND)
     include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
   else()
     message(FATAL_ERROR "Boost not found")
   endif()
+
+  message("Boost libraries: ${Boost_LIBRARIES}")
+
 else(DEFINED ENV{BOOST_ROOT})
   include_directories(SYSTEM $ENV{BOOST_ROOT})
   link_directories($ENV{BOOST_ROOT}/stage/lib)
