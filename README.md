@@ -184,3 +184,13 @@ and run the following commands:
 > msbuild ripplelibppdemo.vcxproj
 > Debug\ripplelibppdemo.exe
 ```
+
+For 32-bit Windows, open a MSBuild Command Prompt for Visual Studio
+and run the following commands:
+
+```
+> cd %YOUR_RCLPPLIB_DIRECTORY%
+> cmake
+> msbuild ripplelibppdemo.vcxproj
+> Debug\ripplelibppdemo.exe
+```
