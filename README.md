@@ -1,5 +1,9 @@
 # rclpplib
 
+[![Build Status](https://travis-ci.org/ximinez/ripple-libpp.svg?branch=develop)](https://travis-ci.org/ximinez/ripple-libpp)
+[![Build status](https://ci.appveyor.com/api/projects/status/tjm76fspwaq3te8n?svg=true)](https://ci.appveyor.com/project/ximinez/ripple-libpp)
+[![codecov](https://codecov.io/gh/ximinez/ripple-libpp/branch/develop/graph/badge.svg)](https://codecov.io/gh/ximinez/ripple-libpp)
+
 Rippled-compatible signing and serialization library
 
 ## Introduction
