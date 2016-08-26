@@ -16,9 +16,17 @@ nor needing to run your own rippled.
 
 ## Table of contents
 
+* [Dependencies](#dependencies)
+  * [Rippled submodule](#rippled-submodule)
+  * [Other dependencies](#other-dependencies)
+* [Installation](#installation)
+* [Demo](#demo)
+  * [Additional dependencies](#additional-dependencies)
+  * [Build and run](#build-and-run)
+
 ## Dependencies
 
-### Rippled Submodule
+### Rippled submodule
 
 rclpplib includes a git submodule to include the rippled
 source code, which is not cloned by default. To get the
@@ -35,7 +43,7 @@ $ git submodule update
 Note: only a subset of the rippled source code is included
 by the library.
 
-### Other Dependencies
+### Other dependencies
 
 * C++14 or greater
 * [Boost](http://www.boost.org/)
