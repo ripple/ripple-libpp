@@ -27,3 +27,12 @@
 *.exe
 *.out
 *.app
+
+# CMake output
+*.vcxproj
+*.vcxproj.filters
+*.sln
+Makefile
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake

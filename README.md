@@ -9,7 +9,7 @@ C++ library to create, sign, and serialize
 before submission to the Ripple Consensus Ledger
 ([rippled](https://github.com/ripple/rippled)) network.
 Duplicates much of the functionality of the
-[sign](https://ripple.com/build/rippled-apis/#sign)
+[`sign`](https://ripple.com/build/rippled-apis/#sign)
 RPC function without the overhead of a JSON library,
 network delays, needing to trust a 3rd party's rippled,
 nor needing to run your own rippled.
@@ -23,10 +23,14 @@ nor needing to run your own rippled.
 rclpplib includes a git submodule to include the rippled
 source code, which is not cloned by default. To get the
 rippled source, either clone this repository using
-```git clone --recursive <location>```
+```
+$ git clone --recursive <location>
+```
 or after cloning, run the following commands
-```git submodule init
-git submodule update```
+```
+$ git submodule init
+$ git submodule update
+```
 
 Note: only a subset of the rippled source code is included
 by the library.
@@ -130,15 +134,41 @@ CMake project installation example:
 	...
 	```
 
-###
-* ...Dependencies...
-** ...rippled...
-* ...Include unity file...
-* ...Extra include paths...
+## Demo
 
-## How to build demo / test
+Some examples are code provided in `src/test/ripple-libpp_demo.cpp`
+to demonstrate how to create, sign, and verify the signature of a
+transaction. Building and running this demo is an optional step to
+verify that dependencies are installed and available as expected.
 
-* ...cmake...
-** Windows needs target.
-* ...make / msbuild...
-* ...run...
+Note that the demo is not a comprehensive suite of tests of the
+relevent rippled functionality; that is covered by rippled's unit
+tests.
+
+### Additional dependencies
+
+In addition to the Usage [dependencies](#dependencies), building
+the demo requires
+
+* [cmake](https://cmake.org)
+
+### Build and run
+
+For linux and other unix-like OSes, run the following commands:
+
+```
+$ cd ${YOUR_RCLPPLIB_DIRECTORY}
+$ cmake .
+$ make
+$ ./ripplelibppdemo
+```
+
+For 64-bit Windows, open a MSBuild Command Prompt for Visual Studio
+and run the following commands:
+
+```
+> cd %YOUR_RCLPPLIB_DIRECTORY%
+> cmake -G"Visual Studio 14 2015 Win64"
+> msbuild ripplelibppdemo.vcxproj
+> Debug\ripplelibppdemo.exe
+```

@@ -1,14 +1,12 @@
-# !!! The official build system is SConstruct !!!
-# This is an experimental cmake build file for rippled
+# This is an demonstration cmake build file for rclpplib
 #
-# cmake support in rippled. Currently supports:
+# cmake support in rclpplib. Currently supports:
 #
-#  * unity/nounity debug/release
-#  * running protobuf
+#  * debug/release
 #  * sanitizer builds
 #  * optional release build with assert turned on
-#  * `target` variable to easily set compiler/debug/unity
-#     (i.e. -Dtarget=gcc.debug.nounity)
+#  * `target` variable to easily set compiler/debug
+#     (i.e. -Dtarget=gcc.debug)
 #  * gcc/clang/visual studio/xcode
 #  * linux/mac/win
 #  * gcc 4 ABI, when needed
@@ -19,7 +17,6 @@
 # TBD:
 #  * jemalloc support
 #  * count
-#  * Windows protobuf compiler puts generated file in src directory instead of build directory.
 #
 # Notes:
 #  * Use the -G"Visual Studio 14 2015 Win64" generator on Windows. Without this
@@ -29,10 +26,6 @@
 #
 #  * It is not possible to generate a visual studio project on linux or
 #    mac. The visual studio generator is only available on windows.
-#
-#  * The visual studio project can be _either_ unity or
-#    non-unity (selected at generation time).  It does not appear possible
-#    to disable compilation based on configuration.
 #
 #  * Language is _much_ worse than python, poor documentation and "quirky"
 #    language support (for example, generator expressions can only be used
