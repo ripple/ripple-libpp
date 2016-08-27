@@ -58,9 +58,13 @@ cache:
   - cmake
 
 before_install:
+  # TODO: call rippled's version of this once cmake changes are merged
+  # - cd extras/rippled && bin/ci/ubuntu/install-dependencies.sh
   - bin/ci/ubuntu/install-dependencies.sh
 
 script:
+  # TODO: call rippled's version of this once cmake changes are merged
+  # - cd extras/rippled && bin/ci/ubuntu/build-and-test.sh
   - bin/ci/ubuntu/build-and-test.sh
 
 notifications:
