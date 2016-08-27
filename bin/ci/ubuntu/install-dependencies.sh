@@ -34,6 +34,9 @@ if [[ ${BUILD:-} == cmake ]]; then
     if [[ ! -d cmake ]]; then
       CMAKE_URL="https://www.cmake.org/files/v3.6/cmake-3.6.1-Linux-x86_64.tar.gz"
       wget --version
+      # wget version 1.13.4 thinks this certificate is invalid, even though it's fine.
+      # "ERROR: no certificate subject alternative name matches"
+      # See also: https://github.com/travis-ci/travis-ci/issues/5059
       mkdir cmake && wget -O - --no-check-certificate ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
       cmake --version
     fi
