@@ -47,6 +47,13 @@
 
 cmake_minimum_required(VERSION 3.1.0)
 
+# include(extras/rippled/CMakeFuncs.cmake)
+
+set(openssl_min 1.0.2)
+
+# parse_target()
+
+# Delete for parse_target begin
 if (NOT target AND NOT CMAKE_BUILD_TYPE)
   if (APPLE)
     set(target clang.debug)
@@ -55,9 +62,8 @@ if (NOT target AND NOT CMAKE_BUILD_TYPE)
   endif()
 endif()
 
-set(openssl_min 1.0.2)
-
 if (target)
+
   # Parse the target
   set(remaining ${target})
   while (remaining)
@@ -137,7 +143,15 @@ if (target)
   endif()
 
 endif()
+# Delete for parse_target end
 
+if (DEFINED nonunity)
+  message(WARNING "Nonunity builds not supported")
+endif()
+
+# setup_build_cache()
+
+# Delete for setup_build_cache begin
 set(san "" CACHE STRING "On gcc & clang, add sanitizer instrumentation")
 set_property(CACHE san PROPERTY STRINGS ";address;thread")
 set(assert false CACHE BOOL "Enables asserts, even in release builds")
@@ -158,11 +172,13 @@ set(CMAKE_CONFIGURATION_TYPES
 
 set(CMAKE_CONFIGURATION_TYPES
   ${CMAKE_CONFIGURATION_TYPES} CACHE STRING "" FORCE)
+# Delete for setup_build_cache end
 
 project(ripple-libpp)
 
 ############################################################
 
+# Functions in CMakeFuncs.cmake begin
 function(prepend var prefix)
   set(listVar "")
   foreach(f ${ARGN})
@@ -201,7 +217,11 @@ macro(add_with_props src_var files)
     PROPERTIES COMPILE_FLAGS
     ${props})
 endmacro()
+# Functions in CMakeFuncs.cmake end
 
+# determine_build_type()
+
+# remove for determine_build_type begin
 ############################################################
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang") # both Clang and AppleClang
@@ -222,7 +242,11 @@ if (NOT is_gcc AND NOT is_clang AND NOT is_msvc)
   message("Current compiler is ${CMAKE_CXX_COMPILER_ID}")
   message(FATAL_ERROR "Missing compiler. Must be GNU, Clang, or MSVC")
 endif()
+# remove for determine_build_type end
 
+# check_gcc4_abi()
+
+# remove for check_gcc4_abi begin
 ############################################################
 # Check if should use gcc4's ABI
 set(gcc4_abi false)
@@ -248,6 +272,7 @@ endif()
 if (gcc4_abi)
   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 endif()
+# remove for check_gcc4_abi end
 
 ############################################################
 
