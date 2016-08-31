@@ -1,4 +1,4 @@
 [submodule "extras/rippled"]
 	path = extras/rippled
-	url = https://github.com/ripple/rippled.git
-	branch = develop
+	url = https://github.com/ximinez/rippled.git
+	branch = sign-lib
