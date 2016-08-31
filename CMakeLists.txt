@@ -47,232 +47,25 @@
 
 cmake_minimum_required(VERSION 3.1.0)
 
-# include(extras/rippled/CMakeFuncs.cmake)
+include(extras/rippled/CMakeFuncs.cmake)
 
 set(openssl_min 1.0.2)
 
-# parse_target()
-
-# Delete for parse_target begin
-if (NOT target AND NOT CMAKE_BUILD_TYPE)
-  if (APPLE)
-    set(target clang.debug)
-  else()
-    set(target gcc.debug)
-  endif()
-endif()
-
-if (target)
-
-  # Parse the target
-  set(remaining ${target})
-  while (remaining)
-    # get the component up to the next dot or end
-    string(REGEX REPLACE "^\\.?([^\\.]+).*$" "\\1" cur_component ${remaining})
-    string(REGEX REPLACE "^\\.?[^\\.]+(.*$)" "\\1" remaining ${remaining})
-
-    if (${cur_component} STREQUAL gcc)
-      if (DEFINED ENV{GNU_CC})
-        set(CMAKE_C_COMPILER $ENV{GNU_CC})
-      elseif ($ENV{CXX} MATCHES .*gcc.*)
-        set(CMAKE_CXX_COMPILER $ENV{CC})
-      else()
-        find_program(CMAKE_C_COMPILER gcc)
-      endif()
-
-      if (DEFINED ENV{GNU_CXX})
-        set(CMAKE_C_COMPILER $ENV{GNU_CXX})
-      elseif ($ENV{CXX} MATCHES .*g\\+\\+.*)
-        set(CMAKE_C_COMPILER $ENV{CC})
-      else()
-        find_program(CMAKE_CXX_COMPILER g++)
-      endif()
-    endif()
-
-    if (${cur_component} STREQUAL clang)
-      if (DEFINED ENV{CLANG_CC})
-        set(CMAKE_C_COMPILER $ENV{CLANG_CC})
-      elseif ($ENV{CXX} MATCHES .*clang.*)
-        set(CMAKE_CXX_COMPILER $ENV{CC})
-      else()
-        find_program(CMAKE_C_COMPILER clang)
-      endif()
-
-      if (DEFINED ENV{CLANG_CXX})
-        set(CMAKE_C_COMPILER $ENV{CLANG_CXX})
-      elseif ($ENV{CXX} MATCHES .*clang.*)
-        set(CMAKE_C_COMPILER $ENV{CC})
-      else()
-        find_program(CMAKE_CXX_COMPILER clang++)
-      endif()
-    endif()
-
-    if (${cur_component} STREQUAL msvc)
-      # TBD
-    endif()
-
-    if (${cur_component} STREQUAL debug)
-      set(release false)
-    endif()
-
-    if (${cur_component} STREQUAL release)
-      set(release true)
-    endif()
-
-    if (${cur_component} STREQUAL coverage)
-      set(coverage true)
-      set(debug true)
-    endif()
-
-    if (${cur_component} STREQUAL profile)
-      set(profile true)
-    endif()
-
-    if (${cur_component} STREQUAL ci)
-      # Workarounds that make various CI builds work, but that
-      # we don't want in the general case.
-      set(openssl_min 1.0.1)
-    endif()
-
-  endwhile()
-
-  if (release)
-    set(CMAKE_BUILD_TYPE Release)
-  else()
-    set(CMAKE_BUILD_TYPE Debug)
-  endif()
-
-endif()
-# Delete for parse_target end
+parse_target()
 
 if (DEFINED nonunity)
   message(WARNING "Nonunity builds not supported")
 endif()
 
-# setup_build_cache()
-
-# Delete for setup_build_cache begin
-set(san "" CACHE STRING "On gcc & clang, add sanitizer instrumentation")
-set_property(CACHE san PROPERTY STRINGS ";address;thread")
-set(assert false CACHE BOOL "Enables asserts, even in release builds")
-set(static false CACHE BOOL
-  "On linux, link protobuf, openssl, libc++, and boost statically")
-
-if (static AND (WIN32 OR APPLE))
-  message(FATAL_ERROR "Static linking is only supported on linux.")
-endif()
-
-if (${CMAKE_GENERATOR} STREQUAL "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug)
-endif()
-
-set(CMAKE_CONFIGURATION_TYPES
-  Debug
-  Release)
-
-set(CMAKE_CONFIGURATION_TYPES
-  ${CMAKE_CONFIGURATION_TYPES} CACHE STRING "" FORCE)
-# Delete for setup_build_cache end
+setup_build_cache()
 
 project(ripple-libpp)
 
 ############################################################
 
-# Functions in CMakeFuncs.cmake begin
-function(prepend var prefix)
-  set(listVar "")
-  foreach(f ${ARGN})
-    list(APPEND listVar "${prefix}${f}")
-  endforeach(f)
-  set(${var} "${listVar}" PARENT_SCOPE)
-endfunction()
+determine_build_type()
 
-macro(append_flags name)
-  foreach (arg ${ARGN})
-    set(${name} "${${name}} ${arg}")
-  endforeach()
-endmacro()
-
-macro(group_sources curdir)
-  file(GLOB children RELATIVE ${PROJECT_SOURCE_DIR}/${curdir}
-    ${PROJECT_SOURCE_DIR}/${curdir}/*)
-  foreach (child ${children})
-    if (IS_DIRECTORY ${PROJECT_SOURCE_DIR}/${curdir}/${child})
-      group_sources(${curdir}/${child})
-    else()
-      string(REPLACE "/" "\\" groupname ${curdir})
-      source_group(${groupname} FILES
-        ${PROJECT_SOURCE_DIR}/${curdir}/${child})
-    endif()
-  endforeach()
-endmacro()
-
-macro(add_with_props src_var files)
-  list(APPEND ${src_var} ${files})
-  foreach (arg ${ARGN})
-    set(props "${props} ${arg}")
-  endforeach()
-  set_source_files_properties(
-    ${files}
-    PROPERTIES COMPILE_FLAGS
-    ${props})
-endmacro()
-# Functions in CMakeFuncs.cmake end
-
-# determine_build_type()
-
-# remove for determine_build_type begin
-############################################################
-
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang") # both Clang and AppleClang
-  set(is_clang true)
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  set(is_gcc true)
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  set(is_msvc true)
-endif()
-
-if (${CMAKE_GENERATOR} STREQUAL "Xcode")
-  set(is_xcode true)
-else()
-  set(is_xcode false)
-endif()
-
-if (NOT is_gcc AND NOT is_clang AND NOT is_msvc)
-  message("Current compiler is ${CMAKE_CXX_COMPILER_ID}")
-  message(FATAL_ERROR "Missing compiler. Must be GNU, Clang, or MSVC")
-endif()
-# remove for determine_build_type end
-
-# check_gcc4_abi()
-
-# remove for check_gcc4_abi begin
-############################################################
-# Check if should use gcc4's ABI
-set(gcc4_abi false)
-
-if ($ENV{RIPPLED_OLD_GCC_ABI})
-  set(gcc4_abi true)
-endif()
-
-if (is_gcc AND NOT gcc4_abi)
-  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5)
-    execute_process(COMMAND lsb_release -si OUTPUT_VARIABLE lsb)
-    string(STRIP ${lsb} lsb)
-    if (${lsb} STREQUAL "Ubuntu")
-      execute_process(COMMAND lsb_release -sr OUTPUT_VARIABLE lsb)
-      string(STRIP ${lsb} lsb)
-      if (${lsb} VERSION_LESS 15.1)
-        set(gcc4_abi true)
-      endif()
-    endif()
-  endif()
-endif()
-
-if (gcc4_abi)
-  add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
-endif()
-# remove for check_gcc4_abi end
+check_gcc4_abi()
 
 ############################################################
 
@@ -281,15 +74,7 @@ include_directories(
   extras/rippled/src/beast/include
   extras/rippled/src/beast/extras)
 
-if (coverage)
-  add_compile_options(-fprofile-arcs -ftest-coverage)
-  append_flags(CMAKE_EXE_LINKER_FLAGS -fprofile-arcs -ftest-coverage)
-endif()
-
-if (profile)
-  add_compile_options(-p -pg)
-  append_flags(CMAKE_EXE_LINKER_FLAGS -p -pg)
-endif()
+special_build_flags()
 
 ############################################################
 
