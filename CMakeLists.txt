@@ -84,46 +84,12 @@ find_boost(
   system
   thread)
 
-if (NOT WIN32)
-  set(THREADS_PREFER_PTHREAD_FLAG ON)
-  find_package(Threads)
-endif()
+find_pthread()
 
-if (APPLE)
-  # swd TBD fixme
-  file(GLOB OPENSSL_ROOT_DIR /usr/local/Cellar/openssl/*)
-  # set(OPENSSL_ROOT_DIR /usr/local/Cellar/openssl)
-endif()
+find_openssl(${openssl_min})
 
-if (WIN32)
-  if (DEFINED ENV{OPENSSL_ROOT})
-    include_directories($ENV{OPENSSL_ROOT}/include)
-    link_directories($ENV{OPENSSL_ROOT}/lib)
-  endif()
-else()
-  if (static)
-    set(tmp CMAKE_FIND_LIBRARY_SUFFIXES)
-    set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
-  endif()
-
-  find_package(OpenSSL)
-
-  if (static)
-    set(CMAKE_FIND_LIBRARY_SUFFIXES tmp)
-  endif()
-
-  if (OPENSSL_FOUND)
-    include_directories(${OPENSSL_INCLUDE_DIR})
-  else()
-    message(FATAL_ERROR "OpenSSL not found")
-  endif()
-  if (UNIX AND NOT APPLE AND ${OPENSSL_VERSION} VERSION_LESS ${openssl_min})
-    message(FATAL_ERROR
-      "Your openssl is Version: ${OPENSSL_VERSION}, ripple-libpp requires ${openssl_min} or better.")
-  endif()
-endif()
-
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+# message("CMAKE_CURRENT_SOURCE_DIR is ${CMAKE_CURRENT_SOURCE_DIR}")
+# include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
 ############################################################
