@@ -29,10 +29,10 @@
 *.app
 
 # CMake output
-*.vcxproj
-*.vcxproj.filters
-*.sln
-Makefile
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
+/*.vcxproj
+/*.vcxproj.filters
+/*.sln
+/Makefile
+/CMakeCache.txt
+/CMakeFiles/
+/cmake_install.cmake
