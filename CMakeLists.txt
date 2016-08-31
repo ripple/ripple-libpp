@@ -79,29 +79,10 @@ special_build_flags()
 
 ############################################################
 
-if (NOT WIN32)
-  if (is_clang AND DEFINED ENV{CLANG_BOOST_ROOT})
-    set(BOOST_ROOT $ENV{CLANG_BOOST_ROOT})
-  endif()
-
-
-  set(Boost_USE_STATIC_LIBS on)
-  set(Boost_USE_MULTITHREADED on)
-  set(Boost_USE_STATIC_RUNTIME off)
-  find_package(Boost COMPONENTS
-    regex
-    system
-    thread)
-
-  if (Boost_FOUND)
-    include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
-  else()
-    message(FATAL_ERROR "Boost not found")
-  endif()
-else(DEFINED ENV{BOOST_ROOT})
-  include_directories(SYSTEM $ENV{BOOST_ROOT})
-  link_directories($ENV{BOOST_ROOT}/stage/lib)
-endif()
+find_boost(
+  regex
+  system
+  thread)
 
 if (NOT WIN32)
   set(THREADS_PREFER_PTHREAD_FLAG ON)
