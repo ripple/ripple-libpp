@@ -53,8 +53,9 @@ set(openssl_min 1.0.2)
 
 parse_target()
 
-if (DEFINED nonunity)
-  message(WARNING "Nonunity builds not supported")
+if (nonunity)
+  set(target "" CACHE STRING "Build target. Nounity not supported" FORCE)
+  message(FATAL_ERROR "Nonunity builds not supported")
 endif()
 
 setup_build_cache()
