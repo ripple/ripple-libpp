@@ -53,6 +53,10 @@ set(openssl_min 1.0.2)
 
 parse_target()
 
+set(CMAKE_CURRENT_BINARY_DIR
+  "${CMAKE_CURRENT_BINARY_DIR}/build/${target}.cmake")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
 if (nonunity)
   set(target "" CACHE STRING "Build target. Nounity not supported" FORCE)
   message(FATAL_ERROR "Nonunity builds not supported")
@@ -88,153 +92,7 @@ find_pthread()
 
 find_openssl(${openssl_min})
 
-# message("CMAKE_CURRENT_SOURCE_DIR is ${CMAKE_CURRENT_SOURCE_DIR}")
-# include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-
-############################################################
-
-if (NOT WIN32 AND san)
-  add_compile_options(-fsanitize=${san} -fno-omit-frame-pointer)
-
-  append_flags(CMAKE_EXE_LINKER_FLAGS
-    -fsanitize=${san})
-
-  string(TOLOWER ${san} ci_san)
-  if (${ci_san} STREQUAL address)
-    set(SANITIZER_LIBRARIES asan)
-    add_definitions(-DSANITIZER=ASAN)
-  endif()
-  if (${ci_san} STREQUAL thread)
-    set(SANITIZER_LIBRARIES tsan)
-    add_definitions(-DSANITIZER=TSAN)
-  endif()
-endif()
-
-############################################################
-
-add_definitions(
-  -DOPENSSL_NO_SSL2
-  -DDEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER
-  -DHAVE_USLEEP=1
-  -DSOCI_CXX_C11=1
-  -D_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
-  -DBOOST_NO_AUTO_PTR
-  )
-
-if (is_gcc)
-  add_compile_options(-Wno-unused-but-set-variable -Wno-deprecated)
-endif()
-
-# Generator expressions are not supported in add_definitions, use set_property instead
-set_property(
-  DIRECTORY
-  APPEND
-  PROPERTY COMPILE_DEFINITIONS
-  $<$<OR:$<CONFIG:Debug>,$<CONFIG:DebugClassic>>:DEBUG _DEBUG>)
-
-if (NOT assert)
-  set_property(
-    DIRECTORY
-    APPEND
-    PROPERTY COMPILE_DEFINITIONS
-    $<$<OR:$<BOOL:${profile}>,$<CONFIG:Release>,$<CONFIG:ReleaseClassic>>:NDEBUG>)
-endif()
-
-if (NOT WIN32)
-  add_definitions(-D_FILE_OFFSET_BITS=64)
-  append_flags(CMAKE_CXX_FLAGS -frtti -std=c++14 -Wno-invalid-offsetof)
-  add_compile_options(-Wall -Wno-sign-compare -Wno-char-subscripts -Wno-format
-    -Wno-unused-local-typedefs -g)
-  # There seems to be an issue using generator experssions with multiple values,
-  # split the expression
-  add_compile_options($<$<OR:$<CONFIG:Release>,$<CONFIG:ReleaseClassic>>:-O3>)
-  add_compile_options($<$<OR:$<CONFIG:Release>,$<CONFIG:ReleaseClassic>>:-fno-strict-aliasing>)
-  append_flags(CMAKE_EXE_LINKER_FLAGS -rdynamic -g)
-
-  if (is_clang)
-    add_compile_options(
-      -Wno-redeclared-class-member -Wno-mismatched-tags -Wno-deprecated-register)
-    add_definitions(-DBOOST_ASIO_HAS_STD_ARRAY)
-  endif()
-
-  if (APPLE)
-    add_definitions(-DBEAST_COMPILE_OBJECTIVE_CPP=1
-      -DNO_LOG_UNHANDLED_EXCEPTIONS)
-    add_compile_options(
-      -Wno-deprecated -Wno-deprecated-declarations -Wno-unused-variable -Wno-unused-function)
-  endif()
-
-  if (is_gcc)
-    add_compile_options(-Wno-unused-but-set-variable -Wno-unused-local-typedefs)
-    add_compile_options($<$<OR:$<CONFIG:Debug>,$<CONFIG:DebugClassic>>:-O0>)
-  endif (is_gcc)
-else(NOT WIN32)
-  add_compile_options(
-    /bigobj              # Increase object file max size
-    /EHa                 # ExceptionHandling all
-    /fp:precise          # Floating point behavior
-    /Gd                  # __cdecl calling convention
-    /Gm-                 # Minimal rebuild: disabled
-    /GR                  # Enable RTTI
-    /Gy-                 # Function level linking: disabled
-    /FS
-    /MP                  # Multiprocessor compilation
-    /openmp-             # pragma omp: disabled
-    /Zc:forScope         # Language extension: for scope
-    /Zi                  # Generate complete debug info
-    /errorReport:none    # No error reporting to Internet
-    /nologo              # Suppress login banner
-    /W3                  # Warning level 3
-    /WX-                 # Disable warnings as errors
-    /wd"4018"
-    /wd"4244"
-    /wd"4267"
-    /wd"4800"            # Disable C4800(int to bool performance)
-    /wd"4503"            # Decorated name length exceeded, name was truncated
-    )
-  add_definitions(
-    -D_WIN32_WINNT=0x6000
-    -D_SCL_SECURE_NO_WARNINGS
-    -D_CRT_SECURE_NO_WARNINGS
-    -DWIN32_CONSOLE
-    -DNOMINMAX)
-  append_flags(CMAKE_EXE_LINKER_FLAGS
-    /DEBUG
-    /DYNAMICBASE
-    /ERRORREPORT:NONE
-    /MACHINE:X64
-    /MANIFEST
-    /nologo
-    /NXCOMPAT
-    /SUBSYSTEM:CONSOLE
-    /TLBID:1)
-
-
-  # There seems to be an issue using generator experssions with multiple values,
-  # split the expression
-  # /GS  Buffers security check: enable
-  add_compile_options($<$<OR:$<CONFIG:Debug>,$<CONFIG:DebugClassic>>:/GS>)
-  # /MTd Language: Multi-threaded Debug CRT
-  add_compile_options($<$<OR:$<CONFIG:Debug>,$<CONFIG:DebugClassic>>:/MTd>)
-  # /Od  Optimization: Disabled
-  add_compile_options($<$<OR:$<CONFIG:Debug>,$<CONFIG:DebugClassic>>:/Od>)
-  # /RTC1 Run-time error checks:
-  add_compile_options($<$<OR:$<CONFIG:Debug>,$<CONFIG:DebugClassic>>:/RTC1>)
-
-# Generator expressions are not supported in add_definitions, use set_property instead
-set_property(
-  DIRECTORY
-  APPEND
-  PROPERTY COMPILE_DEFINITIONS
-  $<$<OR:$<CONFIG:Debug>,$<CONFIG:DebugClassic>>:_CRTDBG_MAP_ALLOC>)
-
-  # /MT Language: Multi-threaded CRT
-  add_compile_options($<$<OR:$<CONFIG:Release>,$<CONFIG:ReleaseClassic>>:/MT>)
-  add_compile_options($<$<OR:$<CONFIG:Release>,$<CONFIG:ReleaseClassic>>:/Ox>)
-  # /Ox Optimization: Full
-
-endif (NOT WIN32)
+setup_build_boilerplate()
 
 ############################################################
 
@@ -304,20 +162,9 @@ endif()
 
 add_executable(ripplelibppdemo ${lib_src})
 
-if (static)
-  append_flags(CMAKE_EXE_LINKER_FLAGS -static-libstdc++)
-  # set_target_properties(ripple-libpp PROPERTIES LINK_SEARCH_START_STATIC 1)
-  # set_target_properties(ripple-libpp PROPERTIES LINK_SEARCH_END_STATIC 1)
-endif()
+create_build_folder(ripplelibppdemo)
 
-if (WIN32)
-  if (CMAKE_VERSION VERSION_LESS 3.6)
-    message(WARNING
-      "Setting the VS startup project requires cmake 3.6 or later. Please upgrade.")
-  endif()
-  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY
-    VS_STARTUP_PROJECT ripplelibppdemo)
-endif()
+set_startup_project(ripplelibppdemo)
 
 target_link_libraries(ripplelibppdemo
   ${OPENSSL_LIBRARIES} ${SANITIZER_LIBRARIES})

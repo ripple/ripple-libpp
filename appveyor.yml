@@ -81,7 +81,9 @@ build_script:
         {
           # Build with cmake
           cmake --version
-          cmake -G"Visual Studio 14 2015 Win64" -Dtarget=$($env:target).ci
+          $cmake_target="$($env:target).ci"
+          "$cmake_target"
+          cmake -G"Visual Studio 14 2015 Win64" -Dtarget="$cmake_target"
           msbuild /m "$($env:app).vcxproj"
         }
 
@@ -91,11 +93,11 @@ after_build:
           # Put our executable in a place where npm test can find it.
           cp build/$($env:target)/rippled.exe build
           ls build
-          $exe="build/rippled"
+          $exe="build/$env:app"
         }
         else
         {
-          $exe="Debug/$env:app"
+          $exe="build/$($cmake_target).cmake/Debug/$env:app"
         }
         "Exe is at $exe"
 

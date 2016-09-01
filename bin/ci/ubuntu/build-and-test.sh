@@ -12,14 +12,14 @@ echo "using TARGET: $TARGET"
 : ${APP:=rippled}
 if [[ ${BUILD:-scons} == "cmake" ]]; then
   echo "cmake building ${APP}"
-  export APP_PATH="$PWD/${APP}"
-  echo "using APP_PATH: $APP_PATH"
   CMAKE_TARGET=$CC.$TARGET
   if [[ ${CI:-} == true ]]; then
     CMAKE_TARGET=$CMAKE_TARGET.ci
   fi
   cmake -Dtarget=$CMAKE_TARGET
-  make ${APP}
+  make -j${NUM_PROCESSORS:-2} ${APP}
+  export APP_PATH="$PWD/build/${CMAKE_TARGET}.cmake/${APP}"
+  echo "using APP_PATH: $APP_PATH"
 
 else
   export APP_PATH="$PWD/build/$CC.$TARGET/${APP}"
