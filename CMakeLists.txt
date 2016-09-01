@@ -169,29 +169,4 @@ set_startup_project(ripplelibppdemo)
 target_link_libraries(ripplelibppdemo
   ${OPENSSL_LIBRARIES} ${SANITIZER_LIBRARIES})
 
-
-foreach(cur_project ripplelibppdemo)
-  if (NOT WIN32)
-    target_link_libraries(${cur_project} ${Boost_LIBRARIES})
-    target_link_libraries(${cur_project} dl)
-    target_link_libraries(${cur_project} Threads::Threads)
-    if (APPLE)
-      find_library(app_kit AppKit)
-      find_library(foundation Foundation)
-      target_link_libraries(${cur_project}
-        crypto ssl ${app_kit} ${foundation})
-    else()
-      target_link_libraries(${cur_project} rt)
-    endif()
-  else(NOT WIN32)
-    target_link_libraries(${cur_project}
-      $<$<OR:$<CONFIG:Debug>,$<CONFIG:DebugClassic>>:VC/static/ssleay32MTd>
-      $<$<OR:$<CONFIG:Debug>,$<CONFIG:DebugClassic>>:VC/static/libeay32MTd>)
-    target_link_libraries(${cur_project}
-      $<$<OR:$<CONFIG:Release>,$<CONFIG:ReleaseClassic>>:VC/static/ssleay32MT>
-      $<$<OR:$<CONFIG:Release>,$<CONFIG:ReleaseClassic>>:VC/static/libeay32MT>)
-    target_link_libraries(${cur_project}
-      legacy_stdio_definitions.lib Shlwapi kernel32 user32 gdi32 winspool comdlg32
-      advapi32 shell32 ole32 oleaut32 uuid odbc32 odbccp32)
-  endif (NOT WIN32)
-endforeach()
+link_common_libraries(ripplelibppdemo)
