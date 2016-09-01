@@ -82,7 +82,7 @@ build_script:
           # Build with cmake
           cmake --version
           cmake -G"Visual Studio 14 2015 Win64" -Dtarget=$($env:target).ci
-          msbuild "$($env:app).vcxproj"
+          msbuild /m "$($env:app).vcxproj"
         }
 
 after_build:
