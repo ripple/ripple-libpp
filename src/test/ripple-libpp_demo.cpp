@@ -19,9 +19,34 @@
 
 #include <ripple/protocol/digest.h>
 #include <ripple/protocol/HashPrefix.h>
+#include <ripple/protocol/JsonFields.h>
 #include <ripple/protocol/st.h>
 #include <ripple/protocol/TxFlags.h>
+#include <ripple/basics/StringUtilities.h>
+#include <ripple/json/to_string.h>
 #include <boost/version.hpp>
+
+std::string serialize(ripple::STTx const& tx)
+{
+    using namespace ripple;
+
+    return strHex(tx.getSerializer().peekData());
+}
+
+std::shared_ptr<ripple::STTx const> deserialize(std::string blob)
+{
+    using namespace ripple;
+
+    std::pair<Blob, bool> ret(strUnHex(blob));
+
+    if (!ret.second || !ret.first.size())
+        Throw<std::runtime_error>("transaction not valid hex");
+
+    SerialIter sitTrans(makeSlice(ret.first));
+
+    // Can Throw
+    return std::make_shared<STTx const>(std::ref(sitTrans));
+}
 
 bool demonstrateSigning(ripple::KeyType keyType, std::string seedStr,
     std::string expectedAccount)
@@ -44,11 +69,19 @@ bool demonstrateSigning(ripple::KeyType keyType, std::string seedStr,
         obj[sfSigningPubKey] = keypair.first.slice();
     });
 
-    std::cout << "Before signing: \n" << noopTx << "\n";
+    std::cout << "\nBefore signing: \n" << noopTx << "\n"
+        << "Serialized: " << noopTx.getJson(0, true)[jss::tx] << "\n";
 
     noopTx.sign(keypair.first, keypair.second);
 
-    std::cout << "After signing: \n" << noopTx << "\n";
+    auto const serialized = serialize(noopTx);
+    std::cout << "\nAfter signing: \n" << noopTx << "\n"
+        << "Serialized: " << serialized << "\n";
+
+    auto const deserialized = deserialize(serialized);
+    assert(deserialized);
+    assert(deserialized->getTransactionID() == noopTx.getTransactionID());
+    std::cout << "Deserialized: " << *deserialized << "\n";
 
     auto const check1 = noopTx.checkSign(false);
 
@@ -103,7 +136,18 @@ int main (int argc, char** argv)
     auto const pass2 = demonstrateSigning(ripple::KeyType::ed25519,
         "alice", "r9mC1zjD9u5SJXw56pdPhxoDSHaiNcisET");
 
-    assert(pass1 && pass2);
-    return pass1 && pass2 ? 0 : 1;
+    auto pass3 = false;
+    try
+    {
+        auto const empty = deserialize("");
+    }
+    catch (std::runtime_error e)
+    {
+        pass3 = true;
+        assert(e.what() == std::string("transaction not valid hex"));
+    }
+
+    assert(pass1 && pass2 && pass3);
+    return pass1 && pass2 && pass3 ? 0 : 1;
 }
 

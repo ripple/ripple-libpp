@@ -79,6 +79,7 @@
 #include <ripple/json/impl/json_value.cpp>
 #include <ripple/json/impl/json_valueiterator.cpp>
 #include <ripple/json/impl/json_writer.cpp>
+#include <ripple/json/impl/to_string.cpp>
 
 #include <ripple/unity/secp256k1.cpp>
 /* ed25519.c needs to be built separately because it's C. */
