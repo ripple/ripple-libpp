@@ -145,12 +145,12 @@ else()
   unset(no_unused_w)
 endif()
 
-add_with_props("lib_src" src/unity/ripple-libpp.cpp
+add_with_props(lib_src src/unity/ripple-libpp.cpp
   -I"${CMAKE_SOURCE_DIR}/"extras/rippled/src/secp256k1
   ${no_unused_w}
   )
 
-add_with_props("lib_src" extras/rippled/src/ripple/unity/ed25519.c
+add_with_props(lib_src extras/rippled/src/ripple/unity/ed25519.c
   -I"${CMAKE_SOURCE_DIR}/"extras/rippled/src/ed25519-donna)
 
 ############################################################
