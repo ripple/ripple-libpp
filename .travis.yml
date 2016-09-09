@@ -40,14 +40,14 @@ matrix:
       - APP=ripplelibppdemo
       - BUILD=cmake
 
-    - compiler: clang
-      env:
-      - GCC_VER=5
-      - TARGET=debug
-      - CLANG_VER=3.8
-      - PATH=$PWD/llvm-$LLVM_VERSION/bin:$PWD/cmake/bin:$PATH
-      - APP=ripplelibppdemo
-      - BUILD=cmake
+    # - compiler: clang
+    #   env:
+    #   - GCC_VER=5
+    #   - TARGET=debug
+    #   - CLANG_VER=3.8
+    #   - PATH=$PWD/llvm-$LLVM_VERSION/bin:$PWD/cmake/bin:$PATH
+    #   - APP=ripplelibppdemo
+    #   - BUILD=cmake
 
 cache:
   directories:
@@ -56,7 +56,7 @@ cache:
   - cmake
 
 before_install:
-  - ( cd extras/rippled && bin/ci/ubuntu/install-dependencies.sh ../..)
+  - ( cd extras/rippled && bin/ci/ubuntu/install-dependencies.sh ../.. )
 
 script:
   - extras/rippled/bin/ci/ubuntu/build-and-test.sh
