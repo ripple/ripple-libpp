@@ -13,17 +13,20 @@ env:
     - BOOST_ROOT=$HOME/boost_1_60_0
     - BOOST_URL='http://downloads.sourceforge.net/project/boost/boost/1.60.0/boost_1_60_0.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.60.0%2Fboost_1_60_0.tar.gz&ts=1460417589&use_mirror=netix'
 
-packages: &gcc5_pkgs
-  - gcc-5
-  - g++-5
-  - python-software-properties
-  - protobuf-compiler
-  - libprotobuf-dev
-  - libssl-dev
-  - libstdc++6
-  - binutils-gold
-  # Provides a backtrace if the unittests crash
-  - gdb
+addons:
+  apt:
+    sources: ['ubuntu-toolchain-r-test']
+    packages:
+      - gcc-5
+      - g++-5
+      - python-software-properties
+      - protobuf-compiler
+      - libprotobuf-dev
+      - libssl-dev
+      - libstdc++6
+      - binutils-gold
+      # Provides a backtrace if the unittests crash
+      - gdb
 
 matrix:
   include:
@@ -36,20 +39,15 @@ matrix:
       - PATH=$PWD/cmake/bin:$PATH
       - APP=ripplelibppdemo
       - BUILD=cmake
-      addons: &ao_gcc5
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: *gcc5_pkgs
 
-    # - compiler: clang
-    #   env:
-    #   - GCC_VER=5
-    #   - TARGET=debug
-    #   - CLANG_VER=3.8
-    #   - PATH=$PWD/llvm-$LLVM_VERSION/bin:$PWD/cmake/bin:$PATH
-    #   - APP=ripplelibppdemo
-    #   - BUILD=cmake
-    #   addons: *ao_gcc5
+    - compiler: clang
+      env:
+      - GCC_VER=5
+      - TARGET=debug
+      - CLANG_VER=3.8
+      - PATH=$PWD/llvm-$LLVM_VERSION/bin:$PWD/cmake/bin:$PATH
+      - APP=ripplelibppdemo
+      - BUILD=cmake
 
 cache:
   directories:
@@ -58,7 +56,7 @@ cache:
   - cmake
 
 before_install:
-  - cd extras/rippled && bin/ci/ubuntu/install-dependencies.sh ../.. && cd ../..
+  - ( cd extras/rippled && bin/ci/ubuntu/install-dependencies.sh ../..)
 
 script:
   - extras/rippled/bin/ci/ubuntu/build-and-test.sh
