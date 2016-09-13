@@ -47,7 +47,8 @@
 
 cmake_minimum_required(VERSION 3.1.0)
 
-include(extras/rippled/CMakeFuncs.cmake)
+set(CMAKE_MODULE_PATH extras/rippled/Builds/CMake)
+include(CMakeFuncs)
 
 set(openssl_min 1.0.2)
 
