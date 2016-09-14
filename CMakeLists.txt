@@ -47,16 +47,12 @@
 
 cmake_minimum_required(VERSION 3.1.0)
 
-set(CMAKE_MODULE_PATH extras/rippled/Builds/CMake)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extras/rippled/Builds/CMake")
 include(CMakeFuncs)
 
 set(openssl_min 1.0.2)
 
 parse_target()
-
-set(CMAKE_CURRENT_BINARY_DIR
-  "${CMAKE_CURRENT_BINARY_DIR}/build/${target}.cmake")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 if (nonunity)
   set(target "" CACHE STRING "Build target. Nounity not supported" FORCE)
@@ -128,9 +124,17 @@ if (WIN32 OR is_xcode)
     list(APPEND non_unity_srcs "${cursrcs}")
   endforeach()
 
+  file(GLOB_RECURSE all_headers src/*.hpp extras/*.hpp)
+  list(APPEND lib_src "${all_headers}")
+
   # Properties
   set_property(
     SOURCE ${non_unity_srcs}
+    APPEND
+    PROPERTY HEADER_FILE_ONLY
+    true)
+  set_property(
+    SOURCE ${all_headers}
     APPEND
     PROPERTY HEADER_FILE_ONLY
     true)

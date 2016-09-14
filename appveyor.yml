@@ -83,8 +83,11 @@ build_script:
           cmake --version
           $cmake_target="$($env:target).ci"
           "$cmake_target"
-          cmake -G"Visual Studio 14 2015 Win64" -Dtarget="$cmake_target"
+          New-Item -ItemType Directory -Force -Path "build/$cmake_target"
+          Push-Location "build/$cmake_target"
+          cmake -G"Visual Studio 14 2015 Win64" -Dtarget="$cmake_target" ../..
           msbuild /m "$($env:app).vcxproj"
+          Pop-Location
         }
 
 after_build:
@@ -97,7 +100,7 @@ after_build:
         }
         else
         {
-          $exe="build/$($cmake_target).cmake/Debug/$env:app"
+          $exe="build/$cmake_target/Debug/$env:app"
         }
         "Exe is at $exe"
 
