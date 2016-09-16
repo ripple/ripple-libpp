@@ -133,9 +133,11 @@ For linux and other unix-like OSes, run the following commands:
 
 ```
 $ cd ${YOUR_RCLPPLIB_DIRECTORY}
-$ cmake .
+$ mkdir -p build/gcc.debug
+$ cd build/gcc.debug
+$ cmake ../..
 $ make
-$ ./build/gcc.debug.cmake/ripplelibppdemo
+$ ./ripplelibppdemo
 ```
 
 For 64-bit Windows, open a MSBuild Command Prompt for Visual Studio
@@ -143,17 +145,11 @@ and run the following commands:
 
 ```
 > cd %YOUR_RCLPPLIB_DIRECTORY%
-> cmake -G"Visual Studio 14 2015 Win64"
+> mkdir build
+> cd build
+> cmake -G"Visual Studio 14 2015 Win64" ..
 > msbuild ripplelibppdemo.vcxproj
-> build\msvc.cmake\Debug\ripplelibppdemo.exe
+> .\Debug\ripplelibppdemo.exe
 ```
 
-For 32-bit Windows, open a MSBuild Command Prompt for Visual Studio
-and run the following commands:
-
-```
-> cd %YOUR_RCLPPLIB_DIRECTORY%
-> cmake
-> msbuild ripplelibppdemo.vcxproj
-> build\msvc.cmake\Debug\ripplelibppdemo.exe
-```
+32-bit Windows builds are not officially supported.
