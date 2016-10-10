@@ -111,7 +111,7 @@ CMake project installation example:
 
 ## Demo
 
-Some examples are code provided in `src/test/ripple-libpp_demo.cpp`
+Some code examples are provided in `src/test/ripple-libpp_demo.cpp`
 to demonstrate how to create, sign, and verify the signature of a
 transaction. Building and running this demo is an optional step to
 verify that dependencies are installed and available as expected.
@@ -136,7 +136,7 @@ $ cd ${YOUR_RCLPPLIB_DIRECTORY}
 $ mkdir -p build/gcc.debug
 $ cd build/gcc.debug
 $ cmake ../..
-$ make
+$ cmake --build .
 $ ./ripplelibppdemo
 ```
 
@@ -148,7 +148,7 @@ and run the following commands:
 > mkdir build
 > cd build
 > cmake -G"Visual Studio 14 2015 Win64" ..
-> msbuild ripplelibppdemo.vcxproj
+> cmake --build .
 > .\Debug\ripplelibppdemo.exe
 ```
 
