@@ -26,6 +26,7 @@
 #include <ripple/json/to_string.h>
 #include <boost/version.hpp>
 
+
 std::string serialize(ripple::STTx const& tx)
 {
     using namespace ripple;
@@ -37,13 +38,12 @@ std::shared_ptr<ripple::STTx const> deserialize(std::string blob)
 {
     using namespace ripple;
 
-    std::pair<Blob, bool> ret(strUnHex(blob));
+    auto ret{ strUnHex(blob) };
 
     if (!ret.second || !ret.first.size())
         Throw<std::runtime_error>("transaction not valid hex");
 
-    SerialIter sitTrans(makeSlice(ret.first));
-
+    SerialIter sitTrans{ makeSlice(ret.first) };
     // Can Throw
     return std::make_shared<STTx const>(std::ref(sitTrans));
 }
