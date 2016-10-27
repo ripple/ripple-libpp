@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of ripple-libpp: https://github.com/ximinez/ripple-libpp
+    This file is part of ripple-libpp: https://github.com/ripple/ripple-libpp
     Copyright (c) 2016 Ripple Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
@@ -17,15 +17,18 @@
 */
 //==============================================================================
 
+#include <ripple/protocol/AccountID.h>
 #include <ripple/protocol/digest.h>
 #include <ripple/protocol/HashPrefix.h>
 #include <ripple/protocol/JsonFields.h>
+#include <ripple/protocol/Sign.h>
 #include <ripple/protocol/st.h>
 #include <ripple/protocol/TxFlags.h>
 #include <ripple/basics/StringUtilities.h>
 #include <ripple/json/to_string.h>
 #include <boost/version.hpp>
 #include <algorithm>
+#include <stdexcept>
 
 
 std::string serialize(ripple::STTx const& tx)
@@ -48,6 +51,8 @@ std::shared_ptr<ripple::STTx const> deserialize(std::string blob)
     // Can Throw
     return std::make_shared<STTx const>(std::ref(sitTrans));
 }
+
+//------------------------------------------------------------------------------
 
 bool demonstrateSigning(ripple::KeyType keyType, std::string seedStr,
     std::string expectedAccount)
@@ -135,20 +140,8 @@ bool demonstrateSigning(ripple::KeyType keyType, std::string seedStr,
     return check1.first && check2;
 }
 
-int main (int argc, char** argv)
+bool exerciseSigning ()
 {
-#if defined(__GNUC__) && !defined(__clang__)
-    auto constexpr gccver = (__GNUC__ * 100 * 100) +
-                            (__GNUC_MINOR__ * 100) +
-                            __GNUC_PATCHLEVEL__;
-
-    static_assert (gccver >= 50100,
-        "GCC version 5.1.0 or later is required to compile rippled.");
-#endif
-
-    static_assert (BOOST_VERSION >= 105700,
-        "Boost version 1.57 or later is required to compile rippled");
-
     std::vector<bool> passes;
 
     passes.emplace_back(demonstrateSigning(ripple::KeyType::secp256k1,
@@ -178,7 +171,189 @@ int main (int argc, char** argv)
     auto const allPass = std::all_of(passes.begin(), passes.end(),
         [](auto p) { return p; });
     assert(allPass);
-    std::cout << (allPass ? "All checks pass.\n" : "Some checks fail.\n");
+    std::cout << (allPass ?
+        "All single signing checks pass.\n" :
+        "Some single signing checks fail.\n");
+
+    return allPass;
+}
+
+//------------------------------------------------------------------------------
+
+// Demonstrate multisigning.
+
+// Helper function that throws if for some reason we can't create a seed.
+ripple::Seed getSeed (std::string const& seedText)
+{
+    // WARNING!
+    // Never use ripple::parseGenericSeed() for secure code.  Call
+    // ripple::randomSeed() instead, since it is cryptographically secure.
+    boost::optional<ripple::Seed> const possibleSeed {
+        ripple::parseGenericSeed (seedText)};
+
+    if (! possibleSeed)
+        throw std::runtime_error (
+            std::string ("Could not generate seed from: ") + seedText);
+
+    return *possibleSeed;
+}
+
+// Holds identifying information for an account.
+class Credentials
+{
+    std::string const name_;
+    ripple::KeyType const keyType_;
+    ripple::Seed const seed_;
+    std::pair<ripple::PublicKey, ripple::SecretKey> const keys_;
+    ripple::AccountID const id_;
+
+public:
+    Credentials (
+        std::string name,
+        ripple::KeyType keyType = ripple::KeyType::secp256k1)
+    : name_ (name)
+    , keyType_ (keyType)
+    , seed_ (getSeed (name_))
+    , keys_ (ripple::generateKeyPair (keyType_, seed_))
+    , id_ (ripple::calcAccountID (keys_.first))
+    {
+    }
+
+    std::string const& name() const { return name_; }
+    ripple::KeyType const& keyType() const { return keyType_; }
+    ripple::Seed const& seed() const { return seed_; }
+    ripple::SecretKey const& secretKey() const { return keys_.second; }
+    ripple::PublicKey const& publicKey() const { return keys_.first; }
+    ripple::AccountID const& id() const { return id_; }
+};
+
+// Build a transaction that can be multisigned.  All fields must be filled in,
+// including sequence and fee, before any signatures are applied.  If the
+// contents of the transaction are modified then any previously provided
+// multi-signatures will become invalid.
+ripple::STTx buildMultisignTx (
+    ripple::AccountID const& id, std::uint32_t seq, std::uint32_t fee)
+{
+    using namespace ripple;
+
+    STTx noopTx {ttACCOUNT_SET,
+        [id, seq, fee] (auto& obj)
+    {
+        obj[sfAccount] = id;
+        obj[sfFlags] = tfFullyCanonicalSig;
+        obj[sfFee] = STAmount {fee};               // Must be already filled in
+        obj[sfSequence] = seq;                     // Must be already filled in
+        obj[sfSigningPubKey] = Slice {nullptr, 0}; // Must be present and empty
+    }};
+
+    std::cout << "\nBefore signing: \n"
+        << noopTx.getJson(0, false).toStyledString()  << std::endl;
+
+    return noopTx;
+}
+
+// Apply one multi-signature to the supplied transaction.  The signer
+// provides their AccountID, PublicKey, and SecretKey.
+bool multisign (ripple::STTx& tx, Credentials const& signer)
+{
+    using namespace ripple;
+
+    // Get the TxnSignature.
+    Serializer s = buildMultiSigningData (tx, signer.id());
+
+    auto const multisig = ripple::sign (
+        signer.publicKey(), signer.secretKey(), s.slice());
+
+    // Make the signer object that we'll inject into the array.
+    STObject element (sfSigner);
+    element[sfAccount] = signer.id();
+    element[sfSigningPubKey] = signer.publicKey();
+    element[sfTxnSignature] = multisig;
+
+    // If a Signers array does not yet exist make one.
+    if (! tx.isFieldPresent (sfSigners))
+        tx.setFieldArray (sfSigners, {});
+
+    // Insert the signer into the array.
+    STArray& signers {tx.peekFieldArray (sfSigners)};
+    signers.emplace_back (std::move (element));
+
+    // Sort the Signers array by Account.  If it is not sorted when submitted
+    // to the network then it will be rejected.
+    std::sort (signers.begin(), signers.end(),
+        [](STObject const& a, STObject const& b)
+    {
+        return (a[sfAccount] < b[sfAccount]);
+    });
+
+    // Verify that the signature is valid.
+    bool const pass = tx.checkSign(true).first;
+    assert (pass);
+
+    // To submit multisigned JSON to the network use this RPC command:
+    // $ rippled submit_multisigned '<all JSON>'
+    std::cout << "\nMultisigned JSON: \n"
+        << tx.getJson(0, false).toStyledString()  << std::endl;
+
+    // Alternatively, to submit the multisigned blob to the network:
+    //  1. Extract the hex string (including the quotes) following "tx"
+    //  2. Then use this RPC command:
+    //     $ rippled submit <quoted hex string>
+    std::cout << "Multisigned blob:"
+        << tx.getJson(0, true) << std::endl;
+
+    return pass;
+}
+
+// Outlines a multisign process where:
+//  1. A multi-signable transaction is built.
+//  2. That transaction is signed by one signer.
+//  3. The transaction is signed by a different signer.
+bool exerciseMultisign()
+{
+    using namespace ripple;
+
+    // Create credentials for the folks involved in the transaction.
+    Credentials const alice {"alice"};
+    Credentials const billy {"billy"};
+    Credentials const carol {"carol"};
+
+    // Create a transaction on alice's account.  alice doesn't sign it.
+    STTx tx {buildMultisignTx (alice.id(), 2, 100)};
+
+    // billy and carol sign alice's transaction for her.
+    bool allPass = multisign (tx, billy);
+    allPass &= multisign (tx, carol);
+
+    return allPass;
+}
+
+//------------------------------------------------------------------------------
+
+int main (int argc, char** argv)
+{
+#if defined(__GNUC__) && !defined(__clang__)
+    auto constexpr gccver = (__GNUC__ * 100 * 100) +
+                            (__GNUC_MINOR__ * 100) +
+                            __GNUC_PATCHLEVEL__;
+
+    static_assert (gccver >= 50100,
+        "GCC version 5.1.0 or later is required to compile rippled.");
+#endif
+
+    static_assert (BOOST_VERSION >= 105700,
+        "Boost version 1.57 or later is required to compile rippled");
+
+    // Demonstrate single signing.
+    auto allPass = exerciseSigning();
+
+    // Demonstrate multisigning.
+    allPass &= exerciseMultisign();
+
+    assert(allPass);
+    std::cout << (allPass ?
+        "All checks pass.\n" : "Some checks fail.\n");
+
     return allPass ? 0 : 1;
 }
 
