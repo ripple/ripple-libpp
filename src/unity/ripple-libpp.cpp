@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of ripple-libpp: https://github.com/ximinez/ripple-libpp
+    This file is part of ripple-libpp: https://github.com/ripple/ripple-libpp
     Copyright (c) 2016 Ripple Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
