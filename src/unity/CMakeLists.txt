@@ -1,5 +1,27 @@
+# cmake file for ripple-libpp
+
+# Include this library in your own CMake project by including the following somewhere
+# below your project definition (`project(your_application)`)
+#
+# add_subdirectory(extras/ripple-libpp/src/unity)
+#
+# Customize the path as needed
+
+cmake_minimum_required(VERSION 3.1.0)
+
+list(APPEND CMAKE_MODULE_PATH "../../extras/rippled/Builds/CMake")
+include(CMakeFuncs)
+
+include_directories(
+  ../../extras/rippled/src
+  ../../extras/rippled/src/beast/include
+  ../../extras/rippled/src/beast/extras)
+
+determine_build_type()
+
+setup_build_boilerplate()
+
 if (WIN32 OR is_xcode)
-  message("Rippled sources")
   # Rippled sources
   foreach(curdir
       beast/core
@@ -17,6 +39,7 @@ if (WIN32 OR is_xcode)
   endforeach()
 
   file(GLOB_RECURSE all_headers ../../src/*.hpp ../../src/*.h ../../extras/*.hpp)
+  list(APPEND all_headers "../../README.md")
   list(APPEND rippled_src "${all_headers}")
 
   # Properties
@@ -37,7 +60,6 @@ endif()
 ############################################################
 
 if (WIN32 OR is_xcode)
-  message("group_sources ${PROJECT_SOURCE_DIR}")
   group_sources(src)
   group_sources(extras/rippled/src)
 endif()

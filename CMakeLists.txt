@@ -47,7 +47,16 @@
 
 cmake_minimum_required(VERSION 3.1.0)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extras/rippled/Builds/CMake")
+project(ripple-libpp)
+
+############################################################
+
+add_subdirectory(src/unity)
+
+############################################################
+
+set(PATH_TO_RIPPLE_LIBPP "${CMAKE_SOURCE_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${PATH_TO_RIPPLE_LIBPP}/extras/rippled/Builds/CMake")
 include(CMakeFuncs)
 
 set(openssl_min 1.0.2)
@@ -60,8 +69,6 @@ if (nonunity)
 endif()
 
 setup_build_cache()
-
-project(ripple-libpp)
 
 ############################################################
 
@@ -93,10 +100,6 @@ setup_build_boilerplate()
 
 ############################################################
 
-add_subdirectory(src/unity)
-
-############################################################
-
 prepend(demo_src
   src/test/
   ripple-libpp_demo.cpp)
@@ -124,7 +127,6 @@ endif()
 ############################################################
 
 if (WIN32 OR is_xcode)
-  message("group_sources ${PROJECT_SOURCE_DIR}")
   group_sources(src)
   group_sources(extras/rippled/src)
 endif()
