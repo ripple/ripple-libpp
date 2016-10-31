@@ -16,8 +16,15 @@ include_directories(
   ../../extras/rippled/src
   ../../extras/rippled/src/beast/include
   ../../extras/rippled/src/beast/extras)
+#  ../../extras/ripple-libpp/extras/rippled/src/srcp256k1
+#  ../../extras/ripple-libpp/extras/rippled/src/ed25519-donna
 
 determine_build_type()
+
+find_boost(
+  regex
+  system
+  thread)
 
 setup_build_boilerplate()
 
