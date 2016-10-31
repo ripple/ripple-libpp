@@ -26,6 +26,8 @@ find_boost(
   system
   thread)
 
+find_openssl(1.0.1)
+
 setup_build_boilerplate()
 
 if (WIN32 OR is_xcode)
