@@ -48,8 +48,9 @@ if (WIN32 OR is_xcode)
     list(APPEND non_unity_srcs "${cursrcs}")
   endforeach()
 
-  file(GLOB_RECURSE all_headers src/*.hpp src/*.h ../../extras/*.hpp
-    ../../extras/*.h ../../extras/*/CMakeFuncs.cmake)
+  file(GLOB_RECURSE all_headers src/*.hpp src/*.h
+    ../../extras/rippled/src/*.hpp ../../extras/rippled/src/*.h
+    ../../extras/*/CMakeFuncs.cmake)
   list(APPEND all_headers "../../README.md")
   list(APPEND rippled_src "${all_headers}")
 
@@ -72,7 +73,8 @@ endif()
 
 if (WIN32 OR is_xcode)
   group_sources(src)
-  group_sources(extras/rippled)
+  group_sources(extras/rippled/src)
+  group_sources(extras/rippled/Builds)
 endif()
 
 ############################################################
