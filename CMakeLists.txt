@@ -56,7 +56,8 @@ add_subdirectory(src/unity)
 ############################################################
 
 set(PATH_TO_RIPPLE_LIBPP "${CMAKE_SOURCE_DIR}")
-list(APPEND CMAKE_MODULE_PATH "${PATH_TO_RIPPLE_LIBPP}/extras/rippled/Builds/CMake")
+list(APPEND CMAKE_MODULE_PATH
+  "${PATH_TO_RIPPLE_LIBPP}/extras/rippled/Builds/CMake")
 include(CMakeFuncs)
 
 set(openssl_min 1.0.2)
