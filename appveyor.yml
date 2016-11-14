@@ -86,7 +86,7 @@ build_script:
           New-Item -ItemType Directory -Force -Path "build/$cmake_target"
           Push-Location "build/$cmake_target"
           cmake -G"Visual Studio 14 2015 Win64" -Dtarget="$cmake_target" ../..
-          cmake --build .
+          cmake --build . -- -m
           Pop-Location
         }
 
