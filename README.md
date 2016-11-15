@@ -68,32 +68,29 @@ CMake project installation example:
 			**program tree**
 		CMakeLists.txt
 	```
-2. Edit your `CMakeLists.txt` file to include the necessary unity
-	source files, external libraries, and include directories:
+2. Edit your `CMakeLists.txt` file to include the ripple-libpp config,
+	and the include directories you'll need in your source code:
 
 	```
 	...
-	# Rippled cmake function library
-	include(extras/ripple-libpp/extras/rippled/CMakeFuncs.cmake)
+	add_subdirectory(extras/ripple-libpp/src/unity)
 
 	# Include paths
 	include_directories(
-		${YOUR_OTHER_INCLUDES}
 		extras/ripple-libpp/extras/rippled/src
-		extras/ripple-libpp/extras/rippled/src/srcp256k1
-		extras/ripple-libpp/extras/rippled/src/ed25519-donna
 		extras/ripple-libpp/extras/rippled/src/beast/include
 		extras/ripple-libpp/extras/rippled/src/beast/extras
 	)
+	```
 
-	# Source files
-	add_executable(${YOUR_APP_NAME}
-		${YOUR_SOURCE_FILES}
-		extras/ripple-libpp/src/unity/ripple-libpp.cpp
-		extras/ripple-libpp/extras/rippled/src/ripple/unity/ed25519.c
-	)
+3. If you don't already have the boost and OpenSSL libraries included in 
+	your project, you can use the utility functions provided by rippled
 
-	# Boost library (if not already included)
+	```
+	list(APPEND CMAKE_MODULE_PATH "extras/ripple-libpp/extras/rippled/Builds/CMake")
+	include(CMakeFuncs)
+
+	# Boost library
 	find_boost(
 	    regex
 	    system
@@ -101,7 +98,7 @@ CMake project installation example:
 
 	target_link_libraries(${YOUR_APP_NAME} ${Boost_LIBRARIES})
 
-	# OpenSSL library (if not already included)
+	# OpenSSL library
 	set(openssl_min 1.0.2)
 	find_openssl(${openssl_min})
 
