@@ -28,7 +28,6 @@
 #include <ripple/json/to_string.h>
 #include <boost/version.hpp>
 #include <algorithm>
-#include <stdexcept>
 
 
 std::string serialize(ripple::STTx const& tx)
@@ -140,7 +139,7 @@ bool demonstrateSigning(ripple::KeyType keyType, std::string seedStr,
     return check1.first && check2;
 }
 
-bool exerciseSigning ()
+bool exerciseSingleSign ()
 {
     std::vector<bool> passes;
 
@@ -182,7 +181,7 @@ bool exerciseSigning ()
 
 // Demonstrate multisigning.
 
-// Helper function that throws if for some reason we can't create a seed.
+// Helper function that asserts if for some reason we can't create a seed.
 ripple::Seed getSeed (std::string const& seedText)
 {
     // WARNING!
@@ -191,9 +190,9 @@ ripple::Seed getSeed (std::string const& seedText)
     boost::optional<ripple::Seed> const possibleSeed {
         ripple::parseGenericSeed (seedText)};
 
-    if (! possibleSeed)
-        throw std::runtime_error (
-            std::string ("Could not generate seed from: ") + seedText);
+    // Should not be necessary in production code, since you used
+    // ripple::randomSeed().  Right?
+    assert (possibleSeed);
 
     return *possibleSeed;
 }
@@ -309,7 +308,7 @@ bool multisign (ripple::STTx& tx, Credentials const& signer)
 //  1. A multi-signable transaction is built.
 //  2. That transaction is signed by one signer.
 //  3. The transaction is signed by a different signer.
-bool exerciseMultisign()
+bool exerciseMultiSign()
 {
     using namespace ripple;
 
@@ -345,10 +344,10 @@ int main (int argc, char** argv)
         "Boost version 1.57 or later is required to compile rippled");
 
     // Demonstrate single signing.
-    auto allPass = exerciseSigning();
+    auto allPass = exerciseSingleSign();
 
     // Demonstrate multisigning.
-    allPass &= exerciseMultisign();
+    allPass &= exerciseMultiSign();
 
     assert(allPass);
     std::cout << (allPass ?
