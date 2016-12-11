@@ -80,14 +80,14 @@ special_build_flags()
 
 ############################################################
 
-find_boost(
+use_boost(
   regex
   system
   thread)
 
-find_pthread()
+use_pthread()
 
-find_openssl(${openssl_min})
+use_openssl(${openssl_min})
 
 setup_build_boilerplate()
 
@@ -98,7 +98,7 @@ add_with_props(lib_src src/unity/ripple-libpp.cpp
   ${no_unused_w}
   )
 
-add_with_props(lib_src extras/rippled/src/ripple/unity/ed25519.c
+add_with_props(lib_src extras/rippled/src/ripple/unity/ed25519_donna.c
   -I"${CMAKE_SOURCE_DIR}/"extras/rippled/src/ed25519-donna)
 
 ############################################################
