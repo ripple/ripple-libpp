@@ -27,8 +27,6 @@ include_directories(
   ../../extras/rippled/src
   ../../extras/rippled/src/beast/include
   ../../extras/rippled/src/beast/extras)
-#  extras/ripple-libpp/extras/rippled/src/srcp256k1
-#  extras/ripple-libpp/extras/rippled/src/ed25519-donna
 
 special_build_flags()
 
@@ -52,8 +50,11 @@ set(demo_src ripple-libpp_demo.cpp)
 ############################################################
 
 if (WIN32 OR is_xcode)
-  file(GLOB_RECURSE all_headers src/*.hpp src/*.h
-    ../../extras/rippled/src/*.hpp ../../extras/rippled/src/*.h
+  file(GLOB_RECURSE all_headers
+    src/*.hpp
+    src/*.h
+    ../../extras/rippled/src/*.hpp
+    ../../extras/rippled/src/*.h
     ../../extras/*/CMakeFuncs.cmake)
   list(APPEND demo_src "${all_headers}")
 
@@ -83,11 +84,14 @@ endif()
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-add_executable(ripplelibppdemo ${demo_src} $<TARGET_OBJECTS:ripplelibpp>)
+add_executable(ripplelibppdemo
+    ${demo_src}
+    $<TARGET_OBJECTS:ripplelibpp>)
 
 set_startup_project(ripplelibppdemo)
 
 target_link_libraries(ripplelibppdemo
-  ${OPENSSL_LIBRARIES} ${SANITIZER_LIBRARIES})
+    ${OPENSSL_LIBRARIES}
+    ${SANITIZER_LIBRARIES})
 
 link_common_libraries(ripplelibppdemo)
