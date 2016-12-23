@@ -114,7 +114,7 @@ transaction. Building and running this demo is an optional step to
 verify that dependencies are installed and available as expected.
 
 Note that the demo is not a comprehensive suite of tests of the
-relevent rippled functionality; that is covered by rippled's unit
+relevant rippled functionality; that is covered by rippled's unit
 tests.
 
 ### Additional dependencies
