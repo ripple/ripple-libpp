@@ -68,42 +68,39 @@ CMake project installation example:
 			**program tree**
 		CMakeLists.txt
 	```
-2. Edit your `CMakeLists.txt` file to include the necessary unity
-	source files, external libraries, and include directories:
+2. Edit your `CMakeLists.txt` file to include the ripple-libpp config,
+	and the include directories you'll need in your source code:
 
 	```
 	...
-	# Rippled cmake function library
-	include(extras/ripple-libpp/extras/rippled/CMakeFuncs.cmake)
+	add_subdirectory(extras/ripple-libpp/src/unity)
 
 	# Include paths
 	include_directories(
-		${YOUR_OTHER_INCLUDES}
 		extras/ripple-libpp/extras/rippled/src
-		extras/ripple-libpp/extras/rippled/src/srcp256k1
-		extras/ripple-libpp/extras/rippled/src/ed25519-donna
 		extras/ripple-libpp/extras/rippled/src/beast/include
 		extras/ripple-libpp/extras/rippled/src/beast/extras
 	)
+	```
 
-	# Source files
-	add_executable(${YOUR_APP_NAME}
-		${YOUR_SOURCE_FILES}
-		extras/ripple-libpp/src/unity/ripple-libpp.cpp
-		extras/ripple-libpp/extras/rippled/src/ripple/unity/ed25519.c
-	)
+3. If you don't already have the boost and OpenSSL libraries included in 
+	your project, you can use the utility functions provided by rippled
 
-	# Boost library (if not already included)
-	find_boost(
+	```
+	list(APPEND CMAKE_MODULE_PATH "extras/ripple-libpp/extras/rippled/Builds/CMake")
+	include(CMakeFuncs)
+
+	# Boost library
+	get_boost(
 	    regex
 	    system
 	    thread)
 
 	target_link_libraries(${YOUR_APP_NAME} ${Boost_LIBRARIES})
 
-	# OpenSSL library (if not already included)
+	# OpenSSL library
 	set(openssl_min 1.0.2)
-	find_openssl(${openssl_min})
+	get_openssl(${openssl_min})
 
 	target_link_libraries(${YOUR_APP_NAME} ${OPENSSL_LIBRARIES})
 	...
@@ -117,7 +114,7 @@ transaction. Building and running this demo is an optional step to
 verify that dependencies are installed and available as expected.
 
 Note that the demo is not a comprehensive suite of tests of the
-relevent rippled functionality; that is covered by rippled's unit
+relevant rippled functionality; that is covered by rippled's unit
 tests.
 
 ### Additional dependencies
@@ -135,7 +132,7 @@ For linux and other unix-like OSes, run the following commands:
 $ cd ${YOUR_RIPPLE_LIBPP_DIRECTORY}
 $ mkdir -p build/gcc.debug
 $ cd build/gcc.debug
-$ cmake ../..
+$ cmake ../.. -Dtarget=gcc.debug
 $ cmake --build .
 $ ./ripplelibppdemo
 ```
