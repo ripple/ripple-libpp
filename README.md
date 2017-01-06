@@ -92,7 +92,7 @@ CMake project installation example:
 	include(CMakeFuncs)
 
 	# Boost library
-	get_boost(
+	use_boost(
 	    regex
 	    system
 	    thread)
@@ -101,7 +101,7 @@ CMake project installation example:
 
 	# OpenSSL library
 	set(openssl_min 1.0.2)
-	get_openssl(${openssl_min})
+	use_openssl(${openssl_min})
 
 	target_link_libraries(${YOUR_APP_NAME} ${OPENSSL_LIBRARIES})
 	...
