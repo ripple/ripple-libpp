@@ -82,5 +82,5 @@
 #include <ripple/json/impl/to_string.cpp>
 
 #include <ripple/unity/secp256k1.cpp>
-/* ed25519.c needs to be built separately because it's C. */
-//#include <ripple/unity/ed25519.c>
+/* ed25519_donna.c needs to be built separately because it's C. */
+//#include <ripple/unity/ed25519_donna.c>
