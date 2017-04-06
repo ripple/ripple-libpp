@@ -4,7 +4,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/idswqburp8xeqk7y?svg=true)](https://ci.appveyor.com/project/ripple/ripple-libpp)
 [![codecov](https://codecov.io/gh/ripple/ripple-libpp/branch/master/graph/badge.svg)](https://codecov.io/gh/ripple/ripple-libpp)
 
-Rippled-compatible signing and serialization library
+Rippled-compatible serialization and transaction signing library
 
 ## Introduction
 
