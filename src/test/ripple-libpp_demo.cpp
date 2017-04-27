@@ -26,6 +26,7 @@
 #include <ripple/protocol/TxFlags.h>
 #include <ripple/basics/StringUtilities.h>
 #include <ripple/json/to_string.h>
+#include <ripple-libpp/version.hpp>
 #include <boost/version.hpp>
 #include <algorithm>
 
@@ -342,6 +343,10 @@ int main (int argc, char** argv)
 
     static_assert (BOOST_VERSION >= 105700,
         "Boost version 1.57 or later is required to compile rippled");
+
+    // Display the version
+    std::cout << "ripple-libpp_demo version " <<
+        RIPPLE_LIBPP_VERSION_STRING << "\n";
 
     // Demonstrate single signing.
     auto allPass = exerciseSingleSign();

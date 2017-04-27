@@ -27,7 +27,8 @@ include_directories(
   SYSTEM
   ../../extras/rippled/src
   ../../extras/rippled/src/beast/include
-  ../../extras/rippled/src/beast/extras)
+  ../../extras/rippled/src/beast/extras
+  ../../src/include)
 
 special_build_flags()
 
