@@ -95,19 +95,22 @@ bool demonstrateSigning(ripple::KeyType keyType, std::string seedStr,
             56789, 7);
     });
 
-    std::cout << "\nBefore signing: \n" << noopTx << "\n"
-        << "Serialized: " << noopTx.getJson(0, true)[jss::tx] << "\n";
+    std::cout << "\nBefore signing: \n" <<
+        noopTx.getJson(0).toStyledString() << "\n" <<
+        "Serialized: " << noopTx.getJson(0, true)[jss::tx] << "\n";
 
     noopTx.sign(keypair.first, keypair.second);
 
     auto const serialized = serialize(noopTx);
-    std::cout << "\nAfter signing: \n" << noopTx << "\n"
-        << "Serialized: " << serialized << "\n";
+    std::cout << "\nAfter signing: \n" <<
+        noopTx.getJson(0).toStyledString() << "\n" <<
+        "Serialized: " << serialized << "\n";
 
     auto const deserialized = deserialize(serialized);
     assert(deserialized);
     assert(deserialized->getTransactionID() == noopTx.getTransactionID());
-    std::cout << "Deserialized: " << *deserialized << "\n";
+    std::cout << "Deserialized: " <<
+        deserialized->getJson(0).toStyledString() << "\n";
 
     auto const check1 = noopTx.checkSign(false);
 
