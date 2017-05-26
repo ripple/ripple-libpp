@@ -71,20 +71,20 @@ endif()
 ############################################################
 
 if (WIN32 OR is_xcode)
-  group_sources(src)
-  group_sources(extras/rippled/src)
-  group_sources(extras/rippled/Builds)
+  group_sources_in("${CMAKE_CURRENT_SOURCE_DIR}/../../" src)
+  group_sources_in("${CMAKE_CURRENT_SOURCE_DIR}/../../" extras/rippled/src)
+  group_sources_in("${CMAKE_CURRENT_SOURCE_DIR}/../../" extras/rippled/Builds)
 endif()
 
 ############################################################
 
 add_with_props(lib_src ripple-libpp.cpp
-  -I"${CMAKE_SOURCE_DIR}/"extras/rippled/src/secp256k1
+  -I"${CMAKE_CURRENT_SOURCE_DIR}/../../extras/rippled/src/secp256k1"
   ${no_unused_w}
   )
 
 add_with_props(lib_src ../../extras/rippled/src/ripple/unity/ed25519_donna.c
-  -I"${CMAKE_SOURCE_DIR}/"extras/rippled/src/ed25519-donna)
+  -I"${CMAKE_CURRENT_SOURCE_DIR}/../../extras/rippled/src/ed25519-donna")
 
 add_library(ripplelibpp OBJECT ${lib_src} ${rippled_src})
 
