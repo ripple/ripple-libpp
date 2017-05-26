@@ -79,12 +79,12 @@ endif()
 ############################################################
 
 add_with_props(lib_src ripple-libpp.cpp
-  -I"${CMAKE_CURRENT_SOURCE_DIR}/"../../extras/rippled/src/secp256k1
+  -I"${CMAKE_CURRENT_SOURCE_DIR}/../../extras/rippled/src/secp256k1"
   ${no_unused_w}
   )
 
 add_with_props(lib_src ../../extras/rippled/src/ripple/unity/ed25519_donna.c
-  -I"${CMAKE_CURRENT_SOURCE_DIR}/"../../extras/rippled/src/ed25519-donna)
+  -I"${CMAKE_CURRENT_SOURCE_DIR}/../../extras/rippled/src/ed25519-donna")
 
 add_library(ripplelibpp OBJECT ${lib_src} ${rippled_src})
 
