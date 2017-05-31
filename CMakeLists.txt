@@ -45,9 +45,23 @@
 
 ############################################################
 
+#########################################################
+# CMAKE_C_COMPILER and CMAKE_CXX_COMPILER must be defined
+# before the project statement; However, the project
+# statement will clear CMAKE_BUILD_TYPE. CACHE variables,
+# along with the order of this code, are used to work
+# around these constraints.
+#
+# Don't put any code above or in this block, unless it
+# has similar constraints.
 cmake_minimum_required(VERSION 3.1.0)
-
+list(APPEND CMAKE_MODULE_PATH
+  "${CMAKE_CURRENT_SOURCE_DIR}/extras/rippled/Builds/CMake")
+include(CMakeFuncs)
+set(openssl_min 1.0.2)
+parse_target()
 project(ripple-libpp)
+#########################################################
 
 ############################################################
 
