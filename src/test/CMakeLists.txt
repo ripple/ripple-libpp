@@ -4,10 +4,6 @@ list(APPEND CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}/../../extras/rippled/Builds/CMake")
 include(CMakeFuncs)
 
-set(openssl_min 1.0.2)
-
-parse_target()
-
 if (nonunity)
   set(target "" CACHE STRING "Build target. Nounity not supported" FORCE)
   message(FATAL_ERROR "Nonunity builds not supported")
