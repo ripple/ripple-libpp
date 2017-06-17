@@ -40,6 +40,14 @@ matrix:
       - APP=ripplelibppdemo
       - BUILD=cmake
 
+    - compiler: gcc
+      env:
+      - GCC_VER=5
+      - TARGET=coverage
+      - PATH=$PWD/cmake/bin:$PATH
+      - APP=ripplelibpptest
+      - BUILD=cmake
+
     # - compiler: clang
     #   env:
     #   - GCC_VER=5
@@ -56,10 +64,10 @@ cache:
   - cmake
 
 before_install:
-  - ( cd extras/rippled && bin/ci/ubuntu/install-dependencies.sh ../.. )
+  - ( ./bin/ci/ubuntu/install-dependencies.sh . )
 
 script:
-  - extras/rippled/bin/ci/ubuntu/build-and-test.sh
+  - bin/ci/ubuntu/build-and-test.sh
 
 notifications:
   email:
