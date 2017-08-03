@@ -10,14 +10,15 @@
 cmake_minimum_required(VERSION 3.1.0)
 
 list(APPEND CMAKE_MODULE_PATH
-  "${CMAKE_CURRENT_SOURCE_DIR}/../../extras/rippled/Builds/CMake")
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../Builds/CMake")
 include(CMakeFuncs)
 
 include_directories(
   SYSTEM
-  ../../extras/rippled/src
-  ../../extras/rippled/src/beast/include
-  ../../extras/rippled/src/beast/extras)
+  ../../src/beast
+  ../../src/beast/include
+  ../../src/beast/extras
+  ../../src)
 
 determine_build_type()
 
@@ -41,15 +42,15 @@ if (WIN32 OR is_xcode)
       crypto
       json
       protocol)
-    file(GLOB_RECURSE cursrcs ../../extras/rippled/src/ripple/${curdir}/*.h
-      ../../extras/rippled/src/ripple/${curdir}/*.cpp)
+    file(GLOB_RECURSE cursrcs ../../src/ripple/${curdir}/*.h
+      ../../src/ripple/${curdir}/*.cpp)
     list(APPEND rippled_src "${cursrcs}")
     list(APPEND non_unity_srcs "${cursrcs}")
   endforeach()
 
   file(GLOB_RECURSE all_headers src/*.hpp src/*.h
-    ../../extras/rippled/src/*.hpp ../../extras/rippled/src/*.h
-    ../../extras/*/CMakeFuncs.cmake)
+    ../../src/*.hpp ../../src/*.h
+    ../../*/CMakeFuncs.cmake)
   list(APPEND all_headers "../../README.md")
   list(APPEND rippled_src "${all_headers}")
 
@@ -72,19 +73,17 @@ endif()
 
 if (WIN32 OR is_xcode)
   group_sources_in("${CMAKE_CURRENT_SOURCE_DIR}/../../" src)
-  group_sources_in("${CMAKE_CURRENT_SOURCE_DIR}/../../" extras/rippled/src)
-  group_sources_in("${CMAKE_CURRENT_SOURCE_DIR}/../../" extras/rippled/Builds)
+  group_sources_in("${CMAKE_CURRENT_SOURCE_DIR}/../../" Builds)
 endif()
 
 ############################################################
 
 add_with_props(lib_src ripple-libpp.cpp
-  -I"${CMAKE_CURRENT_SOURCE_DIR}/../../extras/rippled/src/secp256k1"
+  -I"${CMAKE_CURRENT_SOURCE_DIR}/../../src/secp256k1"
   ${no_unused_w}
   )
 
-add_with_props(lib_src ../../extras/rippled/src/ripple/unity/ed25519_donna.c
-  -I"${CMAKE_CURRENT_SOURCE_DIR}/../../extras/rippled/src/ed25519-donna")
+add_with_props(lib_src ../../src/ripple/unity/ed25519_donna.c
+  -I"${CMAKE_CURRENT_SOURCE_DIR}/../../src/ed25519-donna")
 
 add_library(ripplelibpp OBJECT ${lib_src} ${rippled_src})
-

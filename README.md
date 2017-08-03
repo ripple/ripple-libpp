@@ -136,6 +136,7 @@ $ cd build/gcc.debug
 $ cmake ../.. -Dtarget=gcc.debug
 $ cmake --build .
 $ ./ripplelibppdemo
+$ ./ripplelibpptest
 ```
 
 For 64-bit Windows, open a MSBuild Command Prompt for Visual Studio

@@ -21,6 +21,10 @@ environment:
     target: msvc.debug
     app: ripplelibppdemo
 
+  - build: cmake
+    target: msvc.debug
+    app: ripplelibpptest
+
 os: Visual Studio 2015
 
 # At the end of each successful build we cache this directory. It must be less
