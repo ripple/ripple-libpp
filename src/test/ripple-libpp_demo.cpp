@@ -18,6 +18,7 @@
 //==============================================================================
 
 #include <ripple/protocol/AccountID.h>
+#include <ripple/protocol/BuildInfo.h>
 #include <ripple/protocol/digest.h>
 #include <ripple/protocol/HashPrefix.h>
 #include <ripple/protocol/JsonFields.h>
@@ -26,10 +27,7 @@
 #include <ripple/protocol/TxFlags.h>
 #include <ripple/basics/StringUtilities.h>
 #include <ripple/json/to_string.h>
-#include <ripple-libpp/version.hpp>
-#include <boost/version.hpp>
 #include <algorithm>
-
 
 std::string serialize(ripple::STTx const& tx)
 {
@@ -335,21 +333,9 @@ bool exerciseMultiSign()
 
 int main (int argc, char** argv)
 {
-#if defined(__GNUC__) && !defined(__clang__)
-    auto constexpr gccver = (__GNUC__ * 100 * 100) +
-                            (__GNUC_MINOR__ * 100) +
-                            __GNUC_PATCHLEVEL__;
-
-    static_assert (gccver >= 50100,
-        "GCC version 5.1.0 or later is required to compile rippled.");
-#endif
-
-    static_assert (BOOST_VERSION >= 105700,
-        "Boost version 1.57 or later is required to compile rippled");
-
     // Display the version
-    std::cout << "ripple-libpp_demo version " <<
-        RIPPLE_LIBPP_VERSION_STRING << "\n";
+    std::cout << "ripple-libpp_demo built with ripple core version " <<
+        ripple::BuildInfo::getVersionString() << "\n";
 
     // Demonstrate single signing.
     auto allPass = exerciseSingleSign();
