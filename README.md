@@ -23,7 +23,7 @@ nor needing to run your own rippled.
 ## Table of contents
 
 * [Dependencies](#dependencies)
-  * [Rippled submodule](#rippled-submodule)
+  * [Rippled](#rippled)
   * [Other dependencies](#other-dependencies)
 * [Demo](#demo)
   * [Additional dependencies](#additional-dependencies)
@@ -31,18 +31,26 @@ nor needing to run your own rippled.
 
 ## Dependencies
 
-### Rippled submodule
+### Rippled
 
-ripple-libpp includes a git submodule to include the rippled
-source code, which is not cloned by default. To get the
-rippled source, either clone this repository using
+ripple-libpp can download the rippled source code (using cmake
+FetchContent) and build it as part of the normal cmake workflow.
+To enable automatic download add the following flag to your
+cmake invocation
 ```
-$ git clone --recursive <location>
+    cmake -DLIBPPDEMO_DOWNLOAD_RIPPLED=ON
 ```
-or after cloning, run the following commands
+If rippled has been built locally and you do not wish to
+download and build it again, then use
 ```
-$ git submodule init
-$ git submodule update
+    cmake -DRipple_ROOT=/path/to/rippled/install/ \n"
+    # or
+    cmake -DRipple_DIR=/path/to/RippleConfig.cmake
+```
+CMake FetchContent does support building from an existing source tree,
+so another option is to use
+```
+    cmake -DFETCHCONTENT_SOURCE_DIR_rippled=/path/to/local/rippled/source/tree
 ```
 
 Note: even though the entire rippled source tree is included

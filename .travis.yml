@@ -36,19 +36,13 @@ matrix:
       - GCC_VER=5
       - BUILD_TYPE=Debug
       - PARALLEL_TESTS='false'
-      - CMAKE_EXTRA_ARGS='-Werr=ON -Dcoverage=ON'
+      - CMAKE_EXTRA_ARGS='-Werr=ON -Dcoverage=ON -DLIBPPDEMO_DOWNLOAD_RIPPLED=ON'
       - PATH=$PWD/cmake/bin:$PATH
       - APP=ripplelibppdemo
 
 cache:
   directories:
   - $BOOST_ROOT
-
-before_install:
-  - ( cd extras/rippled && bin/ci/ubuntu/install-dependencies.sh ../.. )
-
-script:
-  - extras/rippled/bin/ci/ubuntu/build-and-test.sh
 
 notifications:
   email:

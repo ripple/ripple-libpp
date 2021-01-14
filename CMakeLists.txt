@@ -31,7 +31,7 @@ if (NOT Ripple_FOUND)
   if (NOT LIBPPDEMO_DOWNLOAD_RIPPLED AND NOT FETCHCONTENT_SOURCE_DIR_rippled)
     message(FATAL_ERROR
         "\nRippled was not found: please use -DRipple_ROOT=/path/to/rippled/install/ \n"
-        "or"
+        "or\n"
         "You can download and build Rippled automatically by using -DLIBPPDEMO_DOWNLOAD_RIPPLED=ON "
         "or you can set -DFETCHCONTENT_SOURCE_DIR_rippled=/path/to/local/rippled/source/tree")
   endif()

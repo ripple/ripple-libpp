@@ -65,7 +65,7 @@ build_script:
           "$cmake_target"
           New-Item -ItemType Directory -Force -Path "build/$cmake_target"
           Push-Location "build/$cmake_target"
-          cmake -G"Visual Studio 15 2017 Win64" ../..
+          cmake -DLIBPPDEMO_DOWNLOAD_RIPPLED=ON -G"Visual Studio 15 2017 Win64" ../..
           if ($LastExitCode -ne 0) { throw "CMake failed" }
           cmake --build . --config $env:buildconfig --target $(env:app) -- -m
           if ($LastExitCode -ne 0) { throw "CMake build failed" }
