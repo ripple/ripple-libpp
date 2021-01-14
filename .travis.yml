@@ -1,53 +1,55 @@
 sudo: false
 language: cpp
+dist: bionic
+os: linux
+
+# NB. boost installation/vars copied from main rippled travis config
 
 env:
   global:
-    - LLVM_VERSION=3.8.0
-    # Maintenance note: to move to a new version
-    # of boost, update both BOOST_ROOT and BOOST_URL.
-    # Note that for simplicity, BOOST_ROOT's final
-    # namepart must match the folder name internal
-    # to boost's .tar.gz.
-    - LCOV_ROOT=$HOME/lcov
-    - BOOST_ROOT=$HOME/boost_1_67_0
-    - BOOST_URL='http://sourceforge.net/projects/boost/files/boost/1.67.0/boost_1_67_0.tar.gz'
+    - LLVM_VERSION=6.0.0
+    - CACHE_DIR=${TRAVIS_HOME}/_cache
+    - BOOST_ROOT=${CACHE_DIR}/boost_1_71_0
+    # this is NOT used by linux container based builds (which already have boost installed)
+    - BOOST_URL='https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.bz2'
+    # Alternate dowload location
+    - BOOST_URL2='https://downloads.sourceforge.net/project/boost/boost/1.71.0/boost_1_71_0.tar.bz2?r=&amp;ts=1594393912&amp;use_mirror=newcontinuum'
+    # Travis downloader doesn't seem to have updated certs. Using this option
+    # introduces obvious security risks, but they're Travis's risks.
+    # Note that this option is only used if the "normal" build fails.
+    - BOOST_WGET_OPTIONS='--no-check-certificate'
 
 addons:
   apt:
     sources: ['ubuntu-toolchain-r-test']
     packages:
-      - gcc-5
-      - g++-5
-      - python-software-properties
-      - protobuf-compiler
-      - libprotobuf-dev
+      - gcc-8
+      - g++-8
       - libssl-dev
-      - libstdc++6
-      - binutils-gold
       - cmake
-      - lcov
-      - gdb
 
 matrix:
   include:
-    - compiler: gcc
-      env:
-      - GCC_VER=5
+    - compiler: gcc-8
+    env:
+      - CC=/usr/bin/gcc-8
+      - CXX=/usr/bin/g++-8
+      - GCC_VER=8
       - BUILD_TYPE=Debug
       - PARALLEL_TESTS='false'
-      - CMAKE_EXTRA_ARGS='-Werr=ON -Dcoverage=ON -DLIBPPDEMO_DOWNLOAD_RIPPLED=ON'
+      - CMAKE_EXTRA_ARGS='-Werr=ON -Dcoverage=ON'
       - PATH=$PWD/cmake/bin:$PATH
       - APP=ripplelibppdemo
 
 cache:
+  timeout: 10
   directories:
-  - $BOOST_ROOT
+    - $CACHE_DIR
 
-notifications:
-  email:
-    false
-  irc:
-    channels:
-      - "chat.freenode.net#ripple-dev"
+install:
+  - travis_wait ${MAX_TIME_MIN} ./scripts/install_boost.sh
+
+script:
+  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBoost_DEBUG=ON -DBOOST_ROOT=$BOOST_ROOT -DLIBPPDEMO_DOWNLOAD_RIPPLED=ON $CMAKE_EXTRA_ARGS .
+  - cmake --build build --config $BUILD_TYPE .
 
